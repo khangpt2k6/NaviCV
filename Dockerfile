@@ -1,0 +1,18 @@
+# Use Python 3.10
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy backend code into container
+COPY ./backend /app
+
+# Upgrade pip and install requirements
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+# Expose the port used by Uvicorn
+EXPOSE 10000
+
+# Run the FastAPI server
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
