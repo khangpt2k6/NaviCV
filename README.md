@@ -1,6 +1,6 @@
 # NaviCV
 ### *AI-Powered Resume-Job Matching Platform*
-![Screen Recording 2025-07-19 014939](https://github.com/user-attachments/assets/1ed3eb56-ae6a-4a74-9ada-ec2436d93280)
+<img width="1901" height="908" alt="image" src="https://github.com/user-attachments/assets/7b3b5c12-9ece-4e33-afa5-2e31f5e30509" />
 
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
