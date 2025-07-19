@@ -1,4 +1,4 @@
-# 🚀 NaviCV
+# NaviCV
 ### *AI-Powered Resume-Job Matching Platform*
 
 <div align="center">
@@ -11,9 +11,6 @@
 [![AI](https://img.shields.io/badge/AI-Powered-purple.svg)](https://github.com/yourusername/navicv)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-*Transform your job search with intelligent resume-job matching powered by advanced NLP and machine learning*
-
-[🎯 Live Demo](https://demo.navicv.com) • [📖 Documentation](https://docs.navicv.com) • [🔧 API Reference](https://api.navicv.com/docs)
 
 </div>
 
@@ -25,7 +22,7 @@
 <tr>
 <td width="50%">
 
-### 🔍 **Smart Job Discovery**
+### **Smart Job Discovery**
 - Real-time remote job listings from RemoteOK
 - Advanced filtering and search capabilities
 - Live job market insights
