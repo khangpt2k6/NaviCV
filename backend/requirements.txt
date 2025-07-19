@@ -1,5 +1,6 @@
 setuptools>=65.0.0
 wheel
+python-3.10.13
 
 fastapi==0.104.1
 uvicorn==0.24.0
