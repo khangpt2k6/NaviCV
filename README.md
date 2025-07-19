@@ -16,7 +16,7 @@
 
 ---
 
-## ✨ **Key Features**
+## **Key Features**
 
 <table>
 <tr>
@@ -35,12 +35,12 @@
 </td>
 <td width="50%">
 
-### 🎯 **AI-Driven Matching**
+### **AI-Driven Matching**
 - Semantic similarity scoring
 - Keyword relevance analysis
 - Personalized job recommendations
 
-### 📊 **Visual Insights**
+### **Visual Insights**
 - Interactive match score visualization
 - Career path suggestions
 - Skills gap analysis
