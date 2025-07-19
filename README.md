@@ -83,26 +83,16 @@
 
 ---
 
-## 🚀 **Quick Start**
-
-### **Prerequisites**
-- Python 3.8+
-- Node.js 14+
-- Git
-
 ### **Backend Setup**
 ```bash
 git clone https://github.com/khangpt2k6/NaviCV.git
-cd navicv
+cd backend
 
-# Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Install dependencies
 pip install -r requirements.txt
 
-# Launch FastAPI server
 uvicorn main:app --reload
 ```
 
