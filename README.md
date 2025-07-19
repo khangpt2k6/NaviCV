@@ -3,7 +3,6 @@
 
 <div align="center">
 
-![NaviCV Banner](https://github.com/user-attachments/assets/a1a769db-e4ba-4336-aec0-442fe50013c5)
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Latest-green.svg)](https://fastapi.tiangolo.com)
@@ -51,28 +50,10 @@
 
 ---
 
-## 🏗️ **Architecture Overview**
+## **Architecture Overview**
+![NaviCV Banner](https://github.com/user-attachments/assets/a1a769db-e4ba-4336-aec0-442fe50013c5)
 
-```mermaid
-graph TB
-    A[User Interface - React] --> B[FastAPI Backend]
-    B --> C[RemoteOK API]
-    B --> D[Resume Parser - PyPDF2]
-    D --> E[NLP Pipeline - NLTK/spaCy]
-    E --> F[Sentence Transformers - MiniLM]
-    F --> G[FAISS Vector Search]
-    G --> H[Match Scoring Engine]
-    H --> I[Results Dashboard]
-    
-    style A fill:#61DAFB,stroke:#333,stroke-width:2px,color:#000
-    style B fill:#009688,stroke:#333,stroke-width:2px,color:#fff
-    style F fill:#FF6B6B,stroke:#333,stroke-width:2px,color:#fff
-    style G fill:#4ECDC4,stroke:#333,stroke-width:2px,color:#000
-```
-
----
-
-## 🛠️ **Tech Stack**
+## **Tech Stack**
 
 <div align="center">
 
