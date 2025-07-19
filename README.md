@@ -1,5 +1,6 @@
 # NaviCV
 ### *AI-Powered Resume-Job Matching Platform*
+<img width="1904" height="910" alt="image" src="https://github.com/user-attachments/assets/6089f293-78d7-4a32-b54c-65d509830f54" />
 
 <div align="center">
 
