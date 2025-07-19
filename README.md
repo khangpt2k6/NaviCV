@@ -1,7 +1,8 @@
 # NaviCV
 ### *AI-Powered Resume-Job Matching Platform*
-![Screen Recording 2025-07-19 014939](https://github.com/user-attachments/assets/1ed3eb56-ae6a-4a74-9ada-ec2436d93280)
-
+<div align="center">
+<img src="https://github.com/user-attachments/assets/a1a769db-e4ba-4336-aec0-442fe50013c5" width="1024" height="1024" alt="NaviCV Architecture" />
+</div>
 <div align="center">
 
 
