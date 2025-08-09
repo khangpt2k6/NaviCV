@@ -35,6 +35,9 @@ NaviCV is a comprehensive career assistant that combines AI-powered resume analy
 - **Authentication**: Firebase Auth
 - **Job APIs**: RemoteOK, Adzuna
 
+## Architecture
+<img width="1024" height="1024" alt="unnamed (1)" src="https://github.com/user-attachments/assets/f8b0a376-600b-4cd1-a56b-ae40d7fce493" />
+
 ## Quick Start
 
 ### 1. Clone the Repository
