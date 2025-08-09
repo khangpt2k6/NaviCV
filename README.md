@@ -22,13 +22,6 @@ NaviCV is a comprehensive career assistant that combines AI-powered resume analy
 - **Authentication**: Firebase Auth
 - **Job APIs**: RemoteOK, Adzuna
 
-## Prerequisites
-
-- Node.js (v16 or higher)
-- Python (v3.8 or higher)
-- Firebase account
-- Adzuna API account (optional, for additional job data)
-
 ## Quick Start
 
 ### 1. Clone the Repository
