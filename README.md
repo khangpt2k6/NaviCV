@@ -2,7 +2,7 @@
 
 NaviCV is a comprehensive career assistant that combines AI-powered resume analysis, ATS optimization, and job matching from multiple sources. Built with React, FastAPI, and Firebase.
 
-## 🚀 Features
+## Features
 
 - **AI Resume Analysis**: Extract skills, experience, and insights from resumes
 - **ATS Score Calculation**: Optimize resumes for Applicant Tracking Systems
@@ -12,7 +12,7 @@ NaviCV is a comprehensive career assistant that combines AI-powered resume analy
 - **Resume Weakness Detection**: Identify areas for improvement
 - **Modern UI**: Beautiful, responsive interface
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React.js, Vite, CSS3
 - **Backend**: FastAPI, Python
@@ -22,14 +22,14 @@ NaviCV is a comprehensive career assistant that combines AI-powered resume analy
 - **Authentication**: Firebase Auth
 - **Job APIs**: RemoteOK, Adzuna
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Node.js (v16 or higher)
 - Python (v3.8 or higher)
 - Firebase account
 - Adzuna API account (optional, for additional job data)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone the Repository
 
@@ -147,24 +147,6 @@ For additional job data, get free API keys from [Adzuna Developer Portal](https:
 - `POST /analyze-resume` - Analyze uploaded resume
 - `POST /match-jobs` - Match resume with jobs
 
-## 📝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit your changes: `git commit -am 'Add feature'`
-4. Push to the branch: `git push origin feature-name`
-5. Submit a pull request
-
-## 🤝 Support
-
-If you encounter any issues:
-
-1. Check the Firebase Console to ensure all services are enabled
-2. Verify your environment variables are correctly set
-3. Check the browser console and backend logs for errors
-4. Open an issue on GitHub
-
-## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
