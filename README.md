@@ -125,7 +125,7 @@ The application will be available at:
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8000
 
-## 🔧 Configuration
+## Configuration
 
 ### Firebase Setup
 
@@ -142,7 +142,7 @@ For additional job data, get free API keys from [Adzuna Developer Portal](https:
 3. Get your App ID and API Key
 4. Add them to your `.env` file
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Jobs
 - `GET /jobs` - Get all jobs
