@@ -136,26 +136,6 @@ For additional job data, get free API keys from [Adzuna Developer Portal](https:
 3. Get your App ID and API Key
 4. Add them to your `.env` file
 
-## 📁 Project Structure
-
-```
-NaviCV/
-├── frontend/                 # React frontend
-│   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── firebase.js      # Firebase configuration
-│   │   └── App.jsx          # Main app component
-│   ├── package.json
-│   └── vite.config.js
-├── backend/                  # FastAPI backend
-│   ├── main.py              # Main API server
-│   ├── firebase_config.py   # Firebase backend config
-│   └── requirements.txt     # Python dependencies
-├── .gitignore               # Git ignore rules
-├── env.example              # Environment variables template
-└── README.md               # This file
-```
-
 ## 🔌 API Endpoints
 
 ### Jobs
@@ -212,14 +192,6 @@ If you encounter any issues:
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- [Firebase](https://firebase.google.com/) for backend services
-- [Adzuna](https://developer.adzuna.com/) for job data API
-- [RemoteOK](https://remoteok.io/) for remote job listings
-- [Sentence Transformers](https://www.sbert.net/) for semantic similarity
-- [FAISS](https://github.com/facebookresearch/faiss) for similarity search
 
 ---
 
