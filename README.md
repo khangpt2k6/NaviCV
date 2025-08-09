@@ -2,11 +2,6 @@
 
 NaviCV is a comprehensive career assistant that combines AI-powered resume analysis, ATS optimization, and job matching from multiple sources. Built with React, FastAPI, and Firebase.
 
-#### Sign up - Sign in
-
-<img width="475" alt="Sign up" src="https://github.com/user-attachments/assets/f78dcce1-9c10-4ce0-bf28-b7612190e8ce" />
-<img width="475" alt="Sign in" src="https://github.com/user-attachments/assets/d0bb9632-66e8-4719-a057-88e3498649a9" />
-
 ---
 #### Dashboard
 
