@@ -147,31 +147,6 @@ For additional job data, get free API keys from [Adzuna Developer Portal](https:
 - `POST /analyze-resume` - Analyze uploaded resume
 - `POST /match-jobs` - Match resume with jobs
 
-## 🚀 Deployment
-
-### Frontend Deployment (Vercel/Netlify)
-
-1. Build the frontend:
-```bash
-cd frontend
-npm run build
-```
-
-2. Deploy to Vercel:
-```bash
-npm install -g vercel
-vercel
-```
-
-### Backend Deployment (Heroku/Railway)
-
-1. Create a `Procfile` in the backend directory:
-```
-web: uvicorn main:app --host 0.0.0.0 --port $PORT
-```
-
-2. Deploy to your preferred platform
-
 ## 📝 Contributing
 
 1. Fork the repository
