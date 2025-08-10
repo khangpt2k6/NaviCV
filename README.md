@@ -1,4 +1,4 @@
-# NaviCV - AI-Powered Career Assistant
+# NaviCV 
 
 NaviCV is a comprehensive career assistant that combines AI-powered resume analysis, ATS optimization, and job matching from multiple sources. Built with React, FastAPI, and Firebase.
 
