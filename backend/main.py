@@ -132,7 +132,7 @@ class JobScraper:
     async def fetch_remoteok_jobs(self, limit: int = 50) -> List[Dict]:
         """Fetch jobs from RemoteOK API"""
         try:
-        session = await self.get_session()
+            session = await self.get_session()
             
             # Try multiple endpoints and headers
             endpoints = [
@@ -140,7 +140,7 @@ class JobScraper:
                 "https://remoteok.io/api"
             ]
         
-        headers = {
+            headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                 'Accept': 'application/json, text/plain, */*',
                 'Accept-Language': 'en-US,en;q=0.9',
@@ -440,15 +440,15 @@ def analyze_resume(text: str) -> ResumeAnalysis:
         
         # Extract experience years
         experience_years = None
-    exp_patterns = [
+        exp_patterns = [
             r'(\d+)\s+years?\s+of\s+experience',
             r'experience:\s*(\d+)\s+years?',
             r'(\d+)\s+years?\s+in\s+\w+'
         ]
         
-    for pattern in exp_patterns:
-        match = re.search(pattern, text, re.IGNORECASE)
-        if match:
+        for pattern in exp_patterns:
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
                 experience_years = int(match.group(1))
                 break
     
@@ -459,21 +459,21 @@ def analyze_resume(text: str) -> ResumeAnalysis:
         keywords = list(set(skills + job_titles[:5]))
         
         # Calculate ATS score
-    ats_score = calculate_ats_score(text)
+        ats_score = calculate_ats_score(text)
         
         # Detect weaknesses
-    weaknesses = detect_resume_weaknesses(text)
+        weaknesses = detect_resume_weaknesses(text)
     
-    return ResumeAnalysis(
+        return ResumeAnalysis(
             skills=skills[:20],
-        experience_years=experience_years,
+            experience_years=experience_years,
             job_titles=list(set(job_titles))[:10],
             education=education[:5],
             keywords=keywords[:15],
-        summary=summary,
-        ats_score=ats_score,
-        weaknesses=weaknesses
-    )
+            summary=summary,
+            ats_score=ats_score,
+            weaknesses=weaknesses
+        )
         
     except Exception as e:
         logger.error(f"Error analyzing resume: {str(e)}")
@@ -517,27 +517,27 @@ def calculate_ats_score(text: str) -> ATSScore:
         experience_score = 0.9 if re.search(r'\d{4}', text) else 0.6
         
         # Overall score
-    overall_score = (
-        keyword_score * 0.25 +
-        content_score * 0.20 +
+        overall_score = (
+            keyword_score * 0.25 +
+            content_score * 0.20 +
             formatting_score * 0.15 +
             action_verbs_score * 0.10 +
-        metrics_score * 0.10 +
-        summary_score * 0.10 +
+            metrics_score * 0.10 +
+            summary_score * 0.10 +
             contact_score * 0.05 +
-        experience_score * 0.05
-    )
+            experience_score * 0.05
+        )
     
-    return ATSScore(
-        overall_score=overall_score,
-        keyword_optimization=keyword_score,
-        content_quality=content_score,
+        return ATSScore(
+            overall_score=overall_score,
+            keyword_optimization=keyword_score,
+            content_quality=content_score,
             formatting_score=formatting_score,
             action_verbs=action_verbs_score,
-        metrics_usage=metrics_score,
-        summary_quality=summary_score,
+            metrics_usage=metrics_score,
+            summary_quality=summary_score,
             contact_info=contact_score,
-        experience_detail=experience_score,
+            experience_detail=experience_score,
             education_relevance=0.8
         )
         
@@ -558,14 +558,14 @@ def calculate_ats_score(text: str) -> ATSScore:
 
 def detect_resume_weaknesses(text: str) -> List[ResumeWeakness]:
     """Detect potential weaknesses in resume"""
-    weaknesses = []
-    
     try:
+        weaknesses = []
+        
         # Check for missing summary
         if not re.search(r'summary|objective|profile', text, re.IGNORECASE):
-        weaknesses.append(ResumeWeakness(
+            weaknesses.append(ResumeWeakness(
                 category="Missing Summary",
-            severity="medium",
+                severity="medium",
                 description="No professional summary or objective found",
                 suggestion="Add a compelling summary at the top of your resume",
                 impact="Reduces initial impact and clarity of career goals"
@@ -575,7 +575,7 @@ def detect_resume_weaknesses(text: str) -> List[ResumeWeakness]:
         generic_phrases = ['responsible for', 'duties include', 'helped with']
         generic_count = sum(1 for phrase in generic_phrases if phrase in text.lower())
         if generic_count > 2:
-        weaknesses.append(ResumeWeakness(
+            weaknesses.append(ResumeWeakness(
                 category="Generic Language",
                 severity="high",
                 description=f"Found {generic_count} generic phrases that weaken impact",
@@ -585,9 +585,9 @@ def detect_resume_weaknesses(text: str) -> List[ResumeWeakness]:
         
         # Check for missing metrics
         if not re.search(r'\d+%|\$\d+|\d+\s+users?|\d+\s+projects?', text):
-        weaknesses.append(ResumeWeakness(
+            weaknesses.append(ResumeWeakness(
                 category="Missing Quantifiable Results",
-            severity="high",
+                severity="high",
                 description="No specific metrics or quantifiable achievements found",
                 suggestion="Add specific numbers, percentages, and measurable outcomes",
                 impact="Reduces credibility and impact of achievements"
@@ -597,9 +597,9 @@ def detect_resume_weaknesses(text: str) -> List[ResumeWeakness]:
         passive_patterns = [r'was\s+\w+ed', r'were\s+\w+ed', r'been\s+\w+ed']
         passive_count = sum(len(re.findall(pattern, text, re.IGNORECASE)) for pattern in passive_patterns)
         if passive_count > 3:
-        weaknesses.append(ResumeWeakness(
+            weaknesses.append(ResumeWeakness(
                 category="Passive Voice",
-            severity="medium",
+                severity="medium",
                 description=f"Found {passive_count} instances of passive voice",
                 suggestion="Use active voice and strong action verbs",
                 impact="Makes achievements sound less impactful"
@@ -609,15 +609,15 @@ def detect_resume_weaknesses(text: str) -> List[ResumeWeakness]:
         common_typos = ['teh', 'recieve', 'seperate', 'occured']
         typo_count = sum(1 for typo in common_typos if typo in text.lower())
         if typo_count > 0:
-        weaknesses.append(ResumeWeakness(
+            weaknesses.append(ResumeWeakness(
                 category="Potential Typos",
-            severity="low",
+                severity="low",
                 description=f"Found {typo_count} potential spelling issues",
                 suggestion="Proofread carefully and use spell check",
                 impact="Creates negative first impression"
-        ))
-    
-    return weaknesses
+            ))
+        
+        return weaknesses
         
     except Exception as e:
         logger.error(f"Error detecting weaknesses: {str(e)}")
@@ -642,10 +642,10 @@ def calculate_semantic_similarity(text1: str, text2: str) -> float:
 def calculate_keyword_match(resume_keywords: List[str], job_text: str) -> float:
     """Calculate keyword match score"""
     try:
-    if not resume_keywords:
-        return 0.0
-    
-    job_text_lower = job_text.lower()
+        if not resume_keywords:
+            return 0.0
+        
+        job_text_lower = job_text.lower()
         matched_keywords = sum(1 for keyword in resume_keywords if keyword.lower() in job_text_lower)
         return min(1.0, matched_keywords / len(resume_keywords))
     except Exception as e:
@@ -660,7 +660,7 @@ def normalize_job_data(job: Dict) -> Dict:
         
         if source.startswith('adzuna'):
             # Adzuna format
-    return {
+            return {
                 'job_id': str(job.get('id', '')),
                 'title': job.get('title', job.get('display_name', 'Unknown Position')),
                 'company': job.get('company', {}).get('display_name', 'Unknown Company'),
@@ -680,13 +680,13 @@ def normalize_job_data(job: Dict) -> Dict:
             return {
                 'job_id': str(job.get('id', '')),
                 'title': job.get('position', job.get('title', 'Unknown Position')),
-        'company': job.get('company', 'Unknown Company'),
-        'location': job.get('location', 'Remote'),
-        'description': job.get('description', ''),
-        'tags': job.get('tags', []),
+                'company': job.get('company', 'Unknown Company'),
+                'location': job.get('location', 'Remote'),
+                'description': job.get('description', ''),
+                'tags': job.get('tags', []),
                 'salary': job.get('salary', 'Not specified'),
-        'url': job.get('url', ''),
-        'posted_date': job.get('date', ''),
+                'url': job.get('url', ''),
+                'posted_date': job.get('date', ''),
                 'source': source,
                 'match_score': 0.0,
                 'semantic_score': 0.0,
@@ -823,7 +823,7 @@ async def get_jobs(limit: int = 20, search: Optional[str] = None, location: Opti
         else:
             # Return cached jobs
             return jobs_data[:limit]
-        except Exception as e:
+    except Exception as e:
         logger.error(f"Error getting jobs: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -854,12 +854,12 @@ async def analyze_resume_endpoint(file: UploadFile = File(...)):
 async def match_jobs_endpoint(request: MatchRequest):
     """Match resume with jobs"""
     try:
-    if not jobs_data:
-        await refresh_jobs_data()
-    
+        if not jobs_data:
+            await refresh_jobs_data()
+        
         if not jobs_data:
             raise HTTPException(status_code=500, detail="No job data available")
-        
+    
         # Calculate matches
         matches = []
         resume_text = request.resume_text.lower()
@@ -899,7 +899,7 @@ async def match_jobs_endpoint(request: MatchRequest):
 async def refresh_jobs_endpoint():
     """Manually refresh job data"""
     try:
-    await refresh_jobs_data()
+        await refresh_jobs_data()
         return {"message": "Job data refreshed successfully"}
     except Exception as e:
         logger.error(f"Error refreshing jobs: {str(e)}")
@@ -909,10 +909,10 @@ async def refresh_jobs_endpoint():
 async def get_job_details(job_id: str):
     """Get specific job details"""
     try:
-    for job in jobs_data:
+        for job in jobs_data:
             if str(job.get('job_id')) == job_id:
-            return job
-    raise HTTPException(status_code=404, detail="Job not found")
+                return job
+        raise HTTPException(status_code=404, detail="Job not found")
     except Exception as e:
         logger.error(f"Error getting job details: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
