@@ -1,8 +1,23 @@
-# NaviCV - AI-Powered Career Assistant
+# NaviCV 
 
 NaviCV is a comprehensive career assistant that combines AI-powered resume analysis, ATS optimization, and job matching from multiple sources. Built with React, FastAPI, and Firebase.
 
-## 🚀 Features
+## Architecture
+<img width="1024" height="1024" alt="unnamed (1)" src="https://github.com/user-attachments/assets/f8b0a376-600b-4cd1-a56b-ae40d7fce493" />
+
+---
+
+#### Dashboard
+
+<p align="center">
+  <img width="900" style="border-radius: 12px;" alt="Dashboard" src="https://github.com/user-attachments/assets/d43457e4-ecc1-4a4d-b1bc-fa18d873b544" />
+  <img width="900" height="909" alt="image" src="https://github.com/user-attachments/assets/5c51f727-fbfc-4878-a55a-199d47942894" />
+
+</p>
+
+
+
+## Features
 
 - **AI Resume Analysis**: Extract skills, experience, and insights from resumes
 - **ATS Score Calculation**: Optimize resumes for Applicant Tracking Systems
@@ -12,7 +27,7 @@ NaviCV is a comprehensive career assistant that combines AI-powered resume analy
 - **Resume Weakness Detection**: Identify areas for improvement
 - **Modern UI**: Beautiful, responsive interface
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React.js, Vite, CSS3
 - **Backend**: FastAPI, Python
@@ -22,14 +37,8 @@ NaviCV is a comprehensive career assistant that combines AI-powered resume analy
 - **Authentication**: Firebase Auth
 - **Job APIs**: RemoteOK, Adzuna
 
-## 📋 Prerequisites
 
-- Node.js (v16 or higher)
-- Python (v3.8 or higher)
-- Firebase account
-- Adzuna API account (optional, for additional job data)
-
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone the Repository
 
@@ -119,7 +128,7 @@ The application will be available at:
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8000
 
-## 🔧 Configuration
+## Configuration
 
 ### Firebase Setup
 
@@ -136,27 +145,7 @@ For additional job data, get free API keys from [Adzuna Developer Portal](https:
 3. Get your App ID and API Key
 4. Add them to your `.env` file
 
-## 📁 Project Structure
-
-```
-NaviCV/
-├── frontend/                 # React frontend
-│   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── firebase.js      # Firebase configuration
-│   │   └── App.jsx          # Main app component
-│   ├── package.json
-│   └── vite.config.js
-├── backend/                  # FastAPI backend
-│   ├── main.py              # Main API server
-│   ├── firebase_config.py   # Firebase backend config
-│   └── requirements.txt     # Python dependencies
-├── .gitignore               # Git ignore rules
-├── env.example              # Environment variables template
-└── README.md               # This file
-```
-
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Jobs
 - `GET /jobs` - Get all jobs
@@ -167,59 +156,8 @@ NaviCV/
 - `POST /analyze-resume` - Analyze uploaded resume
 - `POST /match-jobs` - Match resume with jobs
 
-## 🚀 Deployment
-
-### Frontend Deployment (Vercel/Netlify)
-
-1. Build the frontend:
-```bash
-cd frontend
-npm run build
-```
-
-2. Deploy to Vercel:
-```bash
-npm install -g vercel
-vercel
-```
-
-### Backend Deployment (Heroku/Railway)
-
-1. Create a `Procfile` in the backend directory:
-```
-web: uvicorn main:app --host 0.0.0.0 --port $PORT
-```
-
-2. Deploy to your preferred platform
-
-## 📝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit your changes: `git commit -am 'Add feature'`
-4. Push to the branch: `git push origin feature-name`
-5. Submit a pull request
-
-## 🤝 Support
-
-If you encounter any issues:
-
-1. Check the Firebase Console to ensure all services are enabled
-2. Verify your environment variables are correctly set
-3. Check the browser console and backend logs for errors
-4. Open an issue on GitHub
-
-## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- [Firebase](https://firebase.google.com/) for backend services
-- [Adzuna](https://developer.adzuna.com/) for job data API
-- [RemoteOK](https://remoteok.io/) for remote job listings
-- [Sentence Transformers](https://www.sbert.net/) for semantic similarity
-- [FAISS](https://github.com/facebookresearch/faiss) for similarity search
 
 ---
 

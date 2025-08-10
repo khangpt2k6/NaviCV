@@ -1,4 +1,4 @@
-name: NaviCV CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -62,7 +62,7 @@ jobs:
         flags: backend
         name: backend-coverage
 
-  # Frontend Testing and Linting
+  # Frontend Testing
   frontend-test:
     runs-on: ubuntu-latest
     name: Frontend Tests
@@ -190,7 +190,7 @@ jobs:
         name: frontend-build
         path: frontend/dist
 
-  # Build Backend Docker Image
+  # Build Backend 
   build-backend:
     runs-on: ubuntu-latest
     name: Build Backend Docker Image
@@ -221,39 +221,7 @@ jobs:
           ${{ secrets.DOCKER_USERNAME }}/navicv-backend:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-
-  # Deploy to Staging
-  deploy-staging:
-    runs-on: ubuntu-latest
-    name: Deploy to Staging
-    needs: [build-frontend, build-backend]
-    if: github.ref == 'refs/heads/develop'
-    environment: staging
-    
-    steps:
-    - name: Deploy to staging environment
-      run: |
-        echo "Deploying to staging environment..."
-        # Add your staging deployment commands here
-        # Example: kubectl apply -f k8s/staging/
-        # Example: firebase deploy --project staging-project
-
-  # Deploy to Production
-  deploy-production:
-    runs-on: ubuntu-latest
-    name: Deploy to Production
-    needs: [build-frontend, build-backend]
-    if: github.ref == 'refs/heads/main'
-    environment: production
-    
-    steps:
-    - name: Deploy to production environment
-      run: |
-        echo "Deploying to production environment..."
-        # Add your production deployment commands here
-        # Example: kubectl apply -f k8s/production/
-        # Example: firebase deploy --project production-project
-
+        
   # Security Scan
   security-scan:
     runs-on: ubuntu-latest
@@ -304,28 +272,3 @@ jobs:
         locust -f tests/performance/locustfile.py --headless --users 10 --spawn-rate 2 --run-time 60s
       env:
         TARGET_URL: ${{ secrets.STAGING_URL }}
-
-  # Notify on Success/Failure
-  notify:
-    runs-on: ubuntu-latest
-    name: Notify Team
-    needs: [deploy-production, deploy-staging]
-    if: always()
-    
-    steps:
-    - name: Notify Slack on success
-      if: success()
-      uses: 8398a7/action-slack@v3
-      with:
-        status: success
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        text: '✅ NaviCV deployment successful!'
-    
-    - name: Notify Slack on failure
-      if: failure()
-      uses: 8398a7/action-slack@v3
-      with:
-        status: failure
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        text: '❌ NaviCV deployment failed!'
-
