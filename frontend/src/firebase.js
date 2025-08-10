@@ -203,22 +203,36 @@ export const logUserActivity = async (userId, activityType, details = {}) => {
 // File storage functions
 export const uploadResumeFile = async (userId, file) => {
   try {
+    // Check if user is authenticated
+    const currentUser = auth.currentUser;
+    if (!currentUser || currentUser.uid !== userId) {
+      return { success: false, error: 'User not authenticated or userId mismatch' };
+    }
+
     const storageRef = ref(storage, `resumes/${userId}/${file.name}`);
     const snapshot = await uploadBytes(storageRef, file);
     const downloadURL = await getDownloadURL(snapshot.ref);
     
     return { success: true, url: downloadURL };
   } catch (error) {
+    console.error('Upload error:', error);
     return { success: false, error: error.message };
   }
 };
 
 export const deleteResumeFile = async (userId, filename) => {
   try {
+    // Check if user is authenticated
+    const currentUser = auth.currentUser;
+    if (!currentUser || currentUser.uid !== userId) {
+      return { success: false, error: 'User not authenticated or userId mismatch' };
+    }
+
     const storageRef = ref(storage, `resumes/${userId}/${filename}`);
     await deleteObject(storageRef);
     return { success: true };
   } catch (error) {
+    console.error('Delete error:', error);
     return { success: false, error: error.message };
   }
 };

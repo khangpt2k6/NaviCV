@@ -7,12 +7,30 @@ const StorageManager = ({ userId }) => {
   const [deleting, setDeleting] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  // Debug log for userId
+  useEffect(() => {
+    console.log('StorageManager: userId received:', userId);
+  }, [userId]);
 
   useEffect(() => {
-    loadUserFiles();
+    if (userId) {
+      setLoading(true);
+      loadUserFiles().finally(() => setLoading(false));
+    } else {
+      console.log('StorageManager: No userId provided');
+      setError('User not authenticated. Please log in again.');
+      setLoading(false);
+    }
   }, [userId]);
 
   const loadUserFiles = async () => {
+    if (!userId) {
+      console.log('No userId provided, skipping file load');
+      return;
+    }
+    
     try {
       const profileResult = await getUserProfile(userId);
       if (profileResult.success && profileResult.data.files) {
@@ -26,6 +44,12 @@ const StorageManager = ({ userId }) => {
   const handleFileUpload = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    // Validate userId
+    if (!userId) {
+      setError('User not authenticated. Please log in again.');
+      return;
+    }
 
     // Validate file type
     if (!file.type.includes('pdf') && !file.type.includes('doc') && !file.type.includes('docx')) {
@@ -66,6 +90,7 @@ const StorageManager = ({ userId }) => {
         setError(uploadResult.error || 'Upload failed');
       }
     } catch (err) {
+      console.error('Upload error:', err);
       setError('An unexpected error occurred during upload');
     } finally {
       setUploading(false);
@@ -74,6 +99,12 @@ const StorageManager = ({ userId }) => {
 
   const handleFileDelete = async (fileName) => {
     if (!confirm(`Are you sure you want to delete "${fileName}"?`)) {
+      return;
+    }
+
+    // Validate userId
+    if (!userId) {
+      setError('User not authenticated. Please log in again.');
       return;
     }
 
@@ -142,46 +173,64 @@ const StorageManager = ({ userId }) => {
         </div>
       )}
 
-      {/* Upload Section */}
-      <div className="mb-10">
-        <div className="text-center p-10 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 transition-all duration-300 hover:border-slate-600 hover:bg-slate-100">
-          <input
-            type="file"
-            id="file-upload"
-            accept=".pdf,.doc,.docx"
-            onChange={handleFileUpload}
-            disabled={uploading}
-            className="hidden"
-          />
-          <label htmlFor="file-upload" className="inline-flex items-center gap-3 bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-4 rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-600/30 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none">
-            {uploading ? (
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span>Uploading...</span>
-              </div>
-            ) : (
-              <>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="7,10 12,15 17,10"></polyline>
-                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                <span>Upload Resume</span>
-              </>
-            )}
-          </label>
-          <p className="mt-4 text-slate-600 text-sm">Supported formats: PDF, DOC, DOCX (Max 5MB)</p>
+      {/* Loading State */}
+      {loading && (
+        <div className="text-center py-16">
+          <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <div className="w-8 h-8 border-2 border-slate-600/30 border-t-slate-600 rounded-full animate-spin"></div>
+          </div>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">
+            Loading Your Files
+          </h3>
+          <p className="text-slate-600">
+            Please wait while we load your resume files...
+          </p>
         </div>
-      </div>
+      )}
+
+      {/* Upload Section */}
+      {!loading && (
+        <div className="mb-10">
+          <div className="text-center p-10 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 transition-all duration-300 hover:border-slate-600 hover:bg-slate-100">
+            <input
+              type="file"
+              id="file-upload"
+              accept=".pdf,.doc,.docx"
+              onChange={handleFileUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+            <label htmlFor="file-upload" className="inline-flex items-center gap-3 bg-gradient-to-r from-slate-600 to-slate-800 text-white px-6 py-4 rounded-xl text-base font-semibold cursor-pointer transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-600/30 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none">
+              {uploading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Uploading...</span>
+                </div>
+              ) : (
+                <>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7,10 12,15 17,10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>Upload Resume</span>
+                </>
+              )}
+            </label>
+            <p className="mt-4 text-slate-600 text-sm">Supported formats: PDF, DOC, DOCX (Max 5MB)</p>
+          </div>
+        </div>
+      )}
 
       {/* Files Section */}
-      <div>
-        <h3 className="text-slate-700 text-2xl font-semibold mb-5">
-          Your Files ({files.length})
-        </h3>
-        
-        {files.length === 0 ? (
-          <div className="text-center py-15 px-5 text-slate-600">
+      {!loading && (
+        <div>
+          <h3 className="text-slate-700 text-2xl font-semibold mb-5">
+            Your Files ({files.length})
+          </h3>
+          
+          {files.length === 0 ? (
+            <div className="text-center py-16 px-5 text-slate-600">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-slate-400 mb-4 mx-auto">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14,2 14,8 20,8"></polyline>
@@ -246,7 +295,8 @@ const StorageManager = ({ userId }) => {
             ))}
           </div>
         )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

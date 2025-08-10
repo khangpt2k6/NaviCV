@@ -1119,9 +1119,22 @@ const NaviCVApp = () => {
         )}
 
         {/* Storage Tab */}
-        {activeTab === "storage" && (
+        {activeTab === "storage" && user?.uid && (
           <div>
             <StorageManager userId={user.uid} />
+          </div>
+        )}
+        {activeTab === "storage" && !user?.uid && (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Loader2 className="w-8 h-8 animate-spin text-slate-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              Loading User Profile
+            </h3>
+            <p className="text-slate-600">
+              Please wait while we load your profile...
+            </p>
           </div>
         )}
       </main>
