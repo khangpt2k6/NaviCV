@@ -120,7 +120,7 @@ pip install -r requirements.txt
 
 ```bash
 docker compose up --build
-
+```
 
 #### Start Backend
 ```bash
