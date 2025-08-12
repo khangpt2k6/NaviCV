@@ -111,6 +111,11 @@ pip install -r requirements.txt
 
 ### 5. Run the Application
 
+### Run with Docker
+
+```docker compose up --build```
+
+
 #### Start Backend
 ```bash
 cd backend
