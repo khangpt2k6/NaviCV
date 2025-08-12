@@ -111,9 +111,15 @@ pip install -r requirements.txt
 
 ### 5. Run the Application
 
-### Run with Docker
 
-```docker compose up --build```
+<div align="center">
+  <img src="https://media.giphy.com/media/26tn33aiTi1jkl6H6/giphy.gif" width="200" alt="Docker Whale"/>
+</div>
+
+Run with Docker:
+
+```bash
+docker compose up --build
 
 
 #### Start Backend
