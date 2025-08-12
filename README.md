@@ -113,10 +113,10 @@ pip install -r requirements.txt
 
 
 <div align="center">
-  <img src="https://media.giphy.com/media/26tn33aiTi1jkl6H6/giphy.gif" width="200" alt="Docker Whale"/>
+<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/8bf8c64b-637c-4125-966f-539d6c6cb318" />
 </div>
 
-Run with Docker:
+### Run with Docker:
 
 ```bash
 docker compose up --build
