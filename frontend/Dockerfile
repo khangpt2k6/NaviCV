@@ -7,10 +7,10 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies fresh (excludes node_modules from host)
+RUN npm ci
 
-# Copy source code
+# Copy source code (excluding node_modules)
 COPY . .
 
 # Build the app
@@ -24,3 +24,5 @@ EXPOSE 3000
 
 # Start the app
 CMD ["serve", "-s", "dist", "-l", "3000"]
+
+
