@@ -7,9 +7,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID:-navicv-app}
-      - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET:-navicv-app.appspot.com}
-      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/navicv}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
     depends_on:
       - db
     volumes:
