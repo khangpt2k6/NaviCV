@@ -5,13 +5,13 @@ import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'fire
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAOktp5RXdMr2GYiNnVhqc6X2rDxQUi1iE",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "microservice-78e2f.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "microservice-78e2f",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "microservice-78e2f.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "667240236597",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:667240236597:web:395bc64d40ffc36ce6937c",
-  measurementId: "G-KLJC1L52NC"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-KLJC1L52NC"
 };
 
 // Initialize Firebase
