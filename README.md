@@ -52,10 +52,6 @@ cd NaviCV
 
 Copy the example environment file and configure your Firebase credentials:
 
-```bash
-cp env.example .env
-```
-
 Edit `.env` and add your Firebase configuration:
 
 ```env
