@@ -101,6 +101,52 @@ npm install
 #### Backend
 ```bash
 cd backend
+pip install -r requirements.txt
+```
+
+### 5. Run the Application
+
+#### Development Mode
+```bash
+# Frontend (in one terminal)
+cd frontend
+npm run dev
+
+# Backend (in another terminal)
+cd backend
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+#### Production Deployment
+```bash
+# Quick deployment with Firebase
+./deploy.sh
+
+# Or manual deployment
+cd frontend
+npm run build
+firebase deploy
+```
+
+## 🚀 Deployment
+
+This project is configured for Firebase deployment with automated CI/CD:
+
+- **Frontend**: Deployed to Firebase Hosting
+- **Backend**: Can be deployed to Google Cloud Run or run locally
+- **Database**: Firebase Firestore
+- **Storage**: Firebase Storage
+- **Authentication**: Firebase Auth
+
+### Automated Deployment
+The GitHub Actions workflow automatically deploys to Firebase on every push to the main branch.
+
+### Manual Deployment
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+
+#### Backend
+```bash
+cd backend
 python -m venv venv
 # On Windows:
 venv\Scripts\activate
