@@ -905,6 +905,11 @@ async def refresh_jobs_endpoint():
         logger.error(f"Error refreshing jobs: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for deployment platforms"""
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
 @app.get("/job/{job_id}")
 async def get_job_details(job_id: str):
     """Get specific job details"""

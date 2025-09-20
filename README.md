@@ -1,6 +1,6 @@
 # NaviCV 
 
-NaviCV is an all-in-one AI-powered career assistant that offers advanced resume analysis, ATS optimization, and smart job matching from multiple sources. Built with React, FastAPI, and Firebase, it leverages machine learning, semantic search, and vector embeddings to deliver highly relevant career opportunities.
+NaviCV is an all-in-one AI-powered career assistant that offers advanced resume analysis, ATS optimization, and smart job matching from multiple sources. Built with React and FastAPI, it leverages machine learning, semantic search, and vector embeddings to deliver highly relevant career opportunities.
 
 
 ## Architecture
@@ -24,7 +24,7 @@ NaviCV is an all-in-one AI-powered career assistant that offers advanced resume 
 - **ATS Score Calculation**: Optimize resumes for Applicant Tracking Systems
 - **Multi-Source Job Fetching**: Get jobs from RemoteOK and Adzuna APIs
 - **Job Matching**: AI-powered job matching based on resume content
-- **Firebase Integration**: Authentication, storage, and database
+- **Simple Authentication**: Local storage-based user authentication
 - **Resume Weakness Detection**: Identify areas for improvement
 - **Modern UI**: Beautiful, responsive interface
 
@@ -33,9 +33,7 @@ NaviCV is an all-in-one AI-powered career assistant that offers advanced resume 
 - **Frontend**: React.js, Vite, CSS3
 - **Backend**: FastAPI, Python
 - **AI/ML**: Sentence Transformers, FAISS, spaCy, scikit-learn
-- **Database**: Firebase Firestore
-- **Storage**: Firebase Storage
-- **Authentication**: Firebase Auth
+- **Authentication**: Local storage-based authentication
 - **Job APIs**: RemoteOK, Adzuna
 
 
@@ -50,41 +48,22 @@ cd NaviCV
 
 ### 2. Set Up Environment Variables
 
-Copy the example environment file and configure your Firebase credentials:
+Copy the example environment file and configure your settings:
 
-Edit `.env` and add your Firebase configuration:
+Edit `.env` and add your configuration:
 
 ```env
-# Firebase Configuration
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_storage_bucket
-FIREBASE_API_KEY=your_api_key
-FIREBASE_AUTH_DOMAIN=your_auth_domain
-FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-FIREBASE_APP_ID=your_app_id
-
-# Frontend Environment Variables
+# API Configuration
 VITE_API_BASE_URL=http://localhost:8000
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
 
 # Optional: Adzuna API (Get free keys from https://developer.adzuna.com/)
 ADZUNA_APP_ID=your_adzuna_app_id
 ADZUNA_API_KEY=your_adzuna_api_key
 ```
 
-### 3. Set Up Firebase
+### 3. No External Setup Required
 
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select existing one
-3. Enable Authentication (Email/Password)
-4. Enable Firestore Database (Start in test mode)
-5. Enable Storage
-6. Get your configuration from Project Settings
+This version uses simple localStorage-based authentication, so no external services need to be configured!
 
 ### 4. Install Dependencies
 
@@ -115,27 +94,20 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 #### Production Deployment
 ```bash
-# Quick deployment with Firebase
-./deploy.sh
-
-# Or manual deployment
+# Build the frontend
 cd frontend
 npm run build
-firebase deploy
+
+# Deploy to your preferred hosting platform (Vercel, Netlify, etc.)
 ```
 
 ## 🚀 Deployment
 
-This project is configured for Firebase deployment with automated CI/CD:
+This project can be deployed to various platforms:
 
-- **Frontend**: Deployed to Firebase Hosting
-- **Backend**: Can be deployed to Google Cloud Run or run locally
-- **Database**: Firebase Firestore
-- **Storage**: Firebase Storage
-- **Authentication**: Firebase Auth
-
-### Automated Deployment
-The GitHub Actions workflow automatically deploys to Firebase on every push to the main branch.
+- **Frontend**: Can be deployed to Vercel, Netlify, or any static hosting platform
+- **Backend**: Can be deployed to Railway, Render, or any Python hosting service
+- **Authentication**: Uses localStorage, no external auth service required
 
 ### Manual Deployment
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
@@ -183,12 +155,6 @@ The application will be available at:
 - Backend API: http://localhost:8000
 
 ## Configuration
-
-### Firebase Setup
-
-1. **Authentication**: Enable Email/Password sign-in method
-2. **Firestore**: Create database in test mode
-3. **Storage**: Enable storage with default rules
 
 ### Adzuna API (Optional)
 
