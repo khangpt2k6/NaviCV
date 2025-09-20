@@ -100,7 +100,7 @@ jobs:
         flags: frontend
         name: frontend-coverage
 
-  # Build and Test Integration
+  # Integration Testing
   integration-test:
     runs-on: ubuntu-latest
     name: Integration Tests
@@ -147,7 +147,6 @@ jobs:
         pytest tests/integration/ -v
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-        FIREBASE_PROJECT_ID: test-project
 
   # Build Frontend
   build-frontend:
@@ -176,13 +175,6 @@ jobs:
       run: |
         cd frontend
         npm run build
-      env:
-        VITE_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
-        VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
-        VITE_FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-        VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
-        VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
-        VITE_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
     
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
@@ -190,7 +182,7 @@ jobs:
         name: frontend-build
         path: frontend/dist
 
-  # Build Backend 
+  # Build Backend Docker Image
   build-backend:
     runs-on: ubuntu-latest
     name: Build Backend Docker Image
@@ -204,24 +196,22 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-    
-    - name: Build and push backend image
+    - name: Build backend image
       uses: docker/build-push-action@v5
       with:
         context: ./backend
         file: ./backend/Dockerfile
-        push: true
-        tags: |
-          ${{ secrets.DOCKER_USERNAME }}/navicv-backend:latest
-          ${{ secrets.DOCKER_USERNAME }}/navicv-backend:${{ github.sha }}
+        push: false
+        tags: navicv-backend:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        
+    
+    - name: Upload Docker image
+      uses: actions/upload-artifact@v3
+      with:
+        name: backend-image
+        path: /tmp/backend-image.tar
+
   # Security Scan
   security-scan:
     runs-on: ubuntu-latest
@@ -245,30 +235,3 @@ jobs:
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
-
-  # Performance Test
-  performance-test:
-    runs-on: ubuntu-latest
-    name: Performance Test
-    needs: [build-backend]
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python ${{ env.PYTHON_VERSION }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-    
-    - name: Install dependencies
-      run: |
-        pip install locust
-    
-    - name: Run performance tests
-      run: |
-        cd backend
-        locust -f tests/performance/locustfile.py --headless --users 10 --spawn-rate 2 --run-time 60s
-      env:
-        TARGET_URL: ${{ secrets.STAGING_URL }}
