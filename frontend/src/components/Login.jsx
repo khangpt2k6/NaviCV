@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { signInUser, signUpUser } from "../firebase";
 
 const Login = ({ onLoginSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,14 +16,15 @@ const Login = ({ onLoginSuccess }) => {
 
     try {
       if (isLogin) {
-        // Login logic
+        // Simple login logic - just validate email and password
         if (email && password) {
-          const user = await signInUser(email, password);
-          if (user) {
-            onLoginSuccess && onLoginSuccess(user);
-          } else {
-            setError("Invalid credentials");
-          }
+          // For demo purposes, accept any email/password combination
+          const user = {
+            uid: 'demo-user-' + Date.now(),
+            email: email,
+            displayName: email.split('@')[0]
+          };
+          onLoginSuccess && onLoginSuccess(user);
         } else {
           setError("Please enter valid credentials");
         }
@@ -33,12 +33,13 @@ const Login = ({ onLoginSuccess }) => {
         if (password !== confirmPassword) {
           setError("Passwords do not match");
         } else if (email && password && name) {
-          const user = await signUpUser(email, password, name);
-          if (user) {
-            onLoginSuccess && onLoginSuccess(user);
-          } else {
-            setError("Failed to create account");
-          }
+          // For demo purposes, create a simple user object
+          const user = {
+            uid: 'demo-user-' + Date.now(),
+            email: email,
+            displayName: name
+          };
+          onLoginSuccess && onLoginSuccess(user);
         } else {
           setError("Please fill in all fields");
         }

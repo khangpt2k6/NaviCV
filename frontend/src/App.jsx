@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { getCurrentUser, signOutUser } from "./firebase";
 import Login from "./components/Login";
-import StorageManager from "./components/StorageManager";
+
 import {
   Search,
   Upload,
@@ -25,7 +24,7 @@ import {
   CheckCircle,
   Clock,
   LogOut,
-  FolderOpen,
+
 } from "lucide-react";
 
 const API_BASE = "http://localhost:8000";
@@ -49,8 +48,11 @@ const NaviCVApp = () => {
 
   const checkAuthStatus = async () => {
     try {
-      const currentUser = await getCurrentUser();
-      setUser(currentUser);
+      // Check if user is stored in localStorage (simple authentication)
+      const storedUser = localStorage.getItem('navicv_user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
     } catch (err) {
       console.error("Auth check failed:", err);
     } finally {
@@ -60,12 +62,15 @@ const NaviCVApp = () => {
 
   const handleLoginSuccess = (userData) => {
     setUser(userData);
+    // Store user in localStorage for persistence
+    localStorage.setItem('navicv_user', JSON.stringify(userData));
     setActiveTab("search");
   };
 
   const handleLogout = async () => {
     try {
-      await signOutUser();
+      // Clear user from localStorage and state
+      localStorage.removeItem('navicv_user');
       setUser(null);
       setActiveTab("search");
       setResumeAnalysis(null);
@@ -864,17 +869,7 @@ const NaviCVApp = () => {
             <Upload className="w-4 h-4 mr-2" />
             Resume Analysis
           </button>
-          <button
-            onClick={() => setActiveTab("storage")}
-            className={`flex items-center px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
-              activeTab === "storage"
-                ? "bg-slate-700 text-white shadow-md"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-            }`}
-          >
-            <FolderOpen className="w-4 h-4 mr-2" />
-            Storage
-          </button>
+
           {matchedJobs.length > 0 && (
             <button
               onClick={() => setActiveTab("matches")}
@@ -1118,25 +1113,7 @@ const NaviCVApp = () => {
           </div>
         )}
 
-        {/* Storage Tab */}
-        {activeTab === "storage" && user?.uid && (
-          <div>
-            <StorageManager userId={user.uid} />
-          </div>
-        )}
-        {activeTab === "storage" && !user?.uid && (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Loader2 className="w-8 h-8 animate-spin text-slate-600" />
-            </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">
-              Loading User Profile
-            </h3>
-            <p className="text-slate-600">
-              Please wait while we load your profile...
-            </p>
-          </div>
-        )}
+
       </main>
 
       {/* Footer */}
