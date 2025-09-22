@@ -86,8 +86,9 @@ pip install -r requirements.txt
 # Frontend (in one terminal)
 cd frontend
 npm run dev
-
+```
 # Backend (in another terminal)
+
 ```bash
 cd backend
 python -m venv venv
@@ -105,6 +106,7 @@ pip install -r requirements.txt
 <div align="center">
 <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/8bf8c64b-637c-4125-966f-539d6c6cb318" />
 </div>
+
 ```bash
 docker compose up --build
 ```
