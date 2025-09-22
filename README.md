@@ -86,10 +86,8 @@ pip install -r requirements.txt
 # Frontend (in one terminal)
 cd frontend
 npm run dev
-```
-# Backend (in another terminal)
 
-```bash
+# Backend (in another terminal)
 cd backend
 python -m venv venv
 # On Windows:
