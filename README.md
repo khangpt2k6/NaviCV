@@ -88,31 +88,6 @@ cd frontend
 npm run dev
 
 # Backend (in another terminal)
-cd backend
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-#### Production Deployment
-```bash
-# Build the frontend
-cd frontend
-npm run build
-
-# Deploy to your preferred hosting platform (Vercel, Netlify, etc.)
-```
-
-## 🚀 Deployment
-
-This project can be deployed to various platforms:
-
-- **Frontend**: Can be deployed to Vercel, Netlify, or any static hosting platform
-- **Backend**: Can be deployed to Railway, Render, or any Python hosting service
-- **Authentication**: Uses localStorage, no external auth service required
-
-### Manual Deployment
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
-
-#### Backend
 ```bash
 cd backend
 python -m venv venv
@@ -124,46 +99,15 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 5. Run the Application
+### 5. Docker Compose Guide
 
 
 <div align="center">
 <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/8bf8c64b-637c-4125-966f-539d6c6cb318" />
 </div>
-
-### Run with Docker:
-
 ```bash
 docker compose up --build
 ```
-
-#### Start Backend
-```bash
-cd backend
-# Activate virtual environment if not already activated
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-#### Start Frontend
-```bash
-cd frontend
-npm run dev
-```
-
-The application will be available at:
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
-
-## Configuration
-
-### Adzuna API (Optional)
-
-For additional job data, get free API keys from [Adzuna Developer Portal](https://developer.adzuna.com/):
-
-1. Sign up for a free account
-2. Create an application
-3. Get your App ID and API Key
-4. Add them to your `.env` file
 
 ## API Endpoints
 
