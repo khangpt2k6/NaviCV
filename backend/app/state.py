@@ -36,7 +36,8 @@ async def initialize_models(load_spacy=True):
 
     job_vectorizer = TfidfVectorizer(max_features=5000, stop_words="english")
     job_index = None
-    jobs_data = []
+    # Do not replace the list object referenced by other modules; clear instead
+    jobs_data.clear()
 
     await refresh_jobs_data()
     logger.info("Models loaded successfully!")
@@ -81,7 +82,9 @@ async def refresh_jobs_data():
                     seen_ids.add(job_id)
                     normalized_jobs.append(normalized_job)
 
-            jobs_data = normalized_jobs
+            # Mutate the shared list in place so imported references stay valid
+            jobs_data.clear()
+            jobs_data.extend(normalized_jobs)
 
             job_descriptions = [job.get("description", "") + " " + " ".join(job.get("tags", [])) for job in jobs_data]
             if job_descriptions:
@@ -96,10 +99,18 @@ async def refresh_jobs_data():
         else:
             logger.warning("No jobs fetched from any source, using sample data")
             sample_jobs = JobScraper().get_sample_jobs(20)
-            jobs_data = [normalize_job_data(job) for job in sample_jobs]
+            jobs_data.clear()
+            jobs_data.extend([normalize_job_data(job) for job in sample_jobs])
     except Exception as e:
         logger.error(f"Error refreshing job data: {str(e)}")
         sample_jobs = JobScraper().get_sample_jobs(20)
-        jobs_data = [normalize_job_data(job) for job in sample_jobs]
+        jobs_data.clear()
+        jobs_data.extend([normalize_job_data(job) for job in sample_jobs])
+    finally:
+        # Ensure HTTP session is closed to avoid unclosed session warnings
+        try:
+            await scraper.close()
+        except Exception:
+            pass
 
 

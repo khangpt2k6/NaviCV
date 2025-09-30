@@ -20,6 +20,13 @@ class JobScraper:
             self.session = aiohttp.ClientSession()
         return self.session
 
+    async def close(self) -> None:
+        try:
+            if self.session is not None and not self.session.closed:
+                await self.session.close()
+        finally:
+            self.session = None
+
     async def fetch_remoteok_jobs(self, limit: int = 50) -> List[Dict]:
         try:
             session = await self.get_session()
