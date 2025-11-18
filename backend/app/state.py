@@ -20,7 +20,7 @@ jobs_data: List[dict] = []
 
 
 async def initialize_models(load_spacy=True):
-    global sentence_model, nlp, job_vectorizer, job_index, jobs_data
+    global sentence_model, nlp, job_vectorizer, job_index  # noqa: F824
     logger.info("Loading AI models...")
 
     sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -29,10 +29,10 @@ async def initialize_models(load_spacy=True):
         try:
             import spacy  # local import to avoid mandatory dependency at import time
 
-            globals()["nlp"] = spacy.load("en_core_web_sm")
+            nlp = spacy.load("en_core_web_sm")
         except Exception:
             logger.warning("spaCy model not found, using basic processing")
-            globals()["nlp"] = None
+            nlp = None
 
     job_vectorizer = TfidfVectorizer(max_features=5000, stop_words="english")
     job_index = None
@@ -44,7 +44,7 @@ async def initialize_models(load_spacy=True):
 
 
 async def refresh_jobs_data():
-    global jobs_data, job_index, job_vectorizer
+    global job_index, job_vectorizer
     try:
         logger.info("Refreshing job data from multiple sources...")
         scraper = JobScraper()
@@ -63,12 +63,16 @@ async def refresh_jobs_data():
         countries = ["us", "gb", "au", "ca"]
         for country in countries:
             try:
-                adzuna_jobs = await scraper.fetch_adzuna_jobs(limit=50, location=country)
+                adzuna_jobs = await scraper.fetch_adzuna_jobs(
+                    limit=50, location=country
+                )
                 if adzuna_jobs:
                     for job in adzuna_jobs:
                         job["source"] = f"adzuna_{country}"
                     all_jobs.extend(adzuna_jobs)
-                    logger.info(f"Fetched {len(adzuna_jobs)} jobs from Adzuna {country}")
+                    logger.info(
+                        f"Fetched {len(adzuna_jobs)} jobs from Adzuna {country}"
+                    )
             except Exception as e:
                 logger.error(f"Error fetching from Adzuna {country}: {str(e)}")
 
@@ -86,7 +90,10 @@ async def refresh_jobs_data():
             jobs_data.clear()
             jobs_data.extend(normalized_jobs)
 
-            job_descriptions = [job.get("description", "") + " " + " ".join(job.get("tags", [])) for job in jobs_data]
+            job_descriptions = [
+                job.get("description", "") + " " + " ".join(job.get("tags", []))
+                for job in jobs_data
+            ]
             if job_descriptions:
                 vectorizer, index = build_vectorizer_and_index(job_descriptions)
                 job_vectorizer = vectorizer
@@ -112,5 +119,3 @@ async def refresh_jobs_data():
             await scraper.close()
         except Exception:
             pass
-
-
