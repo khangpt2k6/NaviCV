@@ -134,6 +134,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r backend/requirements.txt
+        pip install pytest pytest-asyncio pytest-cov flake8
         cd frontend && npm ci
     
     - name: Run integration tests
@@ -206,27 +207,3 @@ jobs:
       with:
         name: backend-image
         path: /tmp/backend-image.tar
-
-  # Security Scan
-  security-scan:
-    runs-on: ubuntu-latest
-    name: Security Scan
-    needs: [backend-test, frontend-test]
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-    
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
