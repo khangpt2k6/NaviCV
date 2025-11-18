@@ -59,5 +59,3 @@ class JobSearchRequest(BaseModel):
 class MatchRequest(BaseModel):
     resume_text: str
     job_preferences: Optional[Dict[str, Any]] = {}
-
-
