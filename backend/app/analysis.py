@@ -25,32 +25,39 @@ def extract_text_from_pdf(pdf_file: bytes) -> str:
 
 
 def calculate_ats_score(text: str) -> ATSScore:
-    """Calculate ATS compatibility score using simple heuristics."""
+    """Calculate ATS compatibility score using dynamic heuristics."""
     try:
-        keyword_score = min(1.0, len(re.findall(r"\b\w{4,}\b", text)) / 100)
-        content_score = min(1.0, len(text) / 2000)
-        formatting_score = 0.8 if "\n" in text and len(text) > 500 else 0.5
+        word_count = len(re.findall(r"\b\w{4,}\b", text))
+        keyword_score = max(0.0, min(1.0, (word_count - 30) / 200))
+
+        char_count = len(text)
+        content_score = max(0.0, min(1.0, (char_count - 500) / 3500))
+
+        formatting_patterns = len(re.findall(r"\n", text))
+        formatting_score = max(0.3, min(1.0, formatting_patterns / 25))
 
         action_verbs = [
-            "developed",
-            "implemented",
-            "managed",
-            "created",
-            "designed",
-            "built",
-            "maintained",
-            "improved",
+            "developed", "implemented", "managed", "created", "designed", "built",
+            "maintained", "improved", "architected", "engineered", "optimized",
+            "automated", "collaborated", "led", "deployed", "launched", "spearheaded"
         ]
         action_verb_count = sum(1 for verb in action_verbs if verb in text.lower())
-        action_verbs_score = min(1.0, action_verb_count / 5)
+        action_verbs_score = min(1.0, action_verb_count / 8)
 
-        metrics_patterns = [r"\d+%", r"\$\d+", r"\d+\s+users?", r"\d+\s+projects?"]
-        metrics_count = sum(len(re.findall(pattern, text)) for pattern in metrics_patterns)
-        metrics_score = min(1.0, metrics_count / 3)
+        metrics_patterns = [r"\d+%", r"\$\d+", r"\d+\s+users?", r"\d+\s+projects?", r"\d+x", r"\d+\s*k"]
+        metrics_count = sum(len(re.findall(pattern, text, re.IGNORECASE)) for pattern in metrics_patterns)
+        metrics_score = min(1.0, metrics_count / 5)
 
-        summary_score = 0.9 if "summary" in text.lower() or "objective" in text.lower() else 0.6
-        contact_score = 1.0 if re.search(r"@\w+\.\w+", text) else 0.5
-        experience_score = 0.9 if re.search(r"\d{4}", text) else 0.6
+        has_summary = bool(re.search(r"summary|objective|profile|about", text.lower()))
+        summary_score = 0.95 if has_summary else 0.45
+
+        contact_score = 1.0 if re.search(r"[\w\.-]+@[\w\.-]+\.\w+", text) else 0.3
+
+        date_patterns = len(re.findall(r"\d{4}|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec", text, re.IGNORECASE))
+        experience_score = min(1.0, date_patterns / 10)
+
+        has_sections = len(re.findall(r"(skills|experience|education|projects|languages|certifications|awards)", text, re.IGNORECASE))
+        education_relevance = min(1.0, has_sections / 4)
 
         overall_score = (
             keyword_score * 0.25
@@ -60,11 +67,12 @@ def calculate_ats_score(text: str) -> ATSScore:
             + metrics_score * 0.10
             + summary_score * 0.10
             + contact_score * 0.05
-            + experience_score * 0.05
+            + experience_score * 0.03
+            + education_relevance * 0.02
         )
 
         return ATSScore(
-            overall_score=overall_score,
+            overall_score=min(0.99, overall_score),
             keyword_optimization=keyword_score,
             content_quality=content_score,
             formatting_score=formatting_score,
@@ -73,7 +81,7 @@ def calculate_ats_score(text: str) -> ATSScore:
             summary_quality=summary_score,
             contact_info=contact_score,
             experience_detail=experience_score,
-            education_relevance=0.8,
+            education_relevance=education_relevance,
         )
     except Exception as e:
         logger.error(f"Error calculating ATS score: {str(e)}")

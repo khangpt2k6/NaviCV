@@ -29,9 +29,28 @@ def calculate_keyword_match(resume_keywords: List[str], job_text: str) -> float:
     try:
         if not resume_keywords:
             return 0.0
+        
+        stop_words = {
+            'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from', 
+            'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'or', 'that', 
+            'the', 'to', 'was', 'will', 'with', 'you', 'your', 'i', 'we', 'this',
+            'role', 'this', 'team', 'our', 'we', 'have', 'all', 'you', 'their'
+        }
+        
         job_text_lower = job_text.lower()
-        matched_keywords = sum(1 for keyword in resume_keywords if keyword.lower() in job_text_lower)
-        return min(1.0, matched_keywords / len(resume_keywords))
+        meaningful_keywords = [
+            k for k in resume_keywords 
+            if k.lower() not in stop_words and len(k) > 2
+        ]
+        
+        if not meaningful_keywords:
+            return 0.0
+            
+        matched_keywords = sum(
+            1 for keyword in meaningful_keywords 
+            if keyword.lower() in job_text_lower
+        )
+        return matched_keywords / len(meaningful_keywords)
     except Exception as e:
         logger.error(f"Error calculating keyword match: {str(e)}")
         return 0.0

@@ -135,19 +135,21 @@ async def match_jobs_endpoint(request: MatchRequest):
         resume_text = request.resume_text.lower()
         
         for job in jobs_data:
-            job_text = (job.get('description', '') + ' ' + ' '.join(job.get('tags', []))).lower()
+            job_text = (job.get('description', '') + ' ' + job.get('title', '') + ' ' + ' '.join(job.get('tags', []))).lower()
+            job_title = job.get('title', '').lower()
             
             # Calculate semantic similarity
-            semantic_score = calculate_semantic_similarity(resume_text, job_text)
+            semantic_score = calculate_semantic_similarity(sentence_model, request.resume_text, job_text)
             
             # Calculate keyword match
             resume_keywords = request.resume_text.split()
             keyword_score = calculate_keyword_match(resume_keywords, job_text)
             
-            # Overall match score
-            match_score = (semantic_score * 0.7) + (keyword_score * 0.3)
+            # Overall match score - heavily weighted towards semantic similarity
+            match_score = (semantic_score * 0.8) + (keyword_score * 0.2)
             
-            if match_score > 0.1:  # Only include relevant matches
+            # Only include jobs with strong semantic similarity
+            if semantic_score > 0.35 and match_score > 0.3:
                 # Update the scores in the job data
                 job_copy = job.copy()
                 job_copy['match_score'] = match_score

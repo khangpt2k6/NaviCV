@@ -395,51 +395,39 @@ const NaviCVApp = () => {
 
     // ATS Score Component
     const ATSScoreCard = ({ atsScore }) => {
-      const getScoreColor = (score) => {
-        if (score >= 0.8) return "text-emerald-600";
-        if (score >= 0.6) return "text-amber-600";
-        return "text-red-600";
-      };
-
-      const getScoreBg = (score) => {
-        if (score >= 0.8) return "bg-emerald-100";
-        if (score >= 0.6) return "bg-amber-100";
-        return "bg-red-100";
-      };
-
       const getScoreLabel = (score) => {
         if (score >= 0.8) return "Excellent";
-        if (score >= 0.6) return "Good";
-        if (score >= 0.4) return "Fair";
-        return "Poor";
+        if (score >= 0.65) return "Good";
+        if (score >= 0.5) return "Fair";
+        return "Needs Work";
       };
 
       return (
         <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6 mb-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center">
               <Target className="w-6 h-6 text-white" />
             </div>
             <div>
               <h3 className="text-xl font-bold text-slate-900">ATS Compatibility Score</h3>
-              <p className="text-slate-600">How well your resume performs with Applicant Tracking Systems</p>
+              <p className="text-sm text-slate-600">How well your resume performs with Applicant Tracking Systems</p>
             </div>
           </div>
 
           {/* Overall Score */}
           <div className="text-center mb-8">
-            <div className={`w-24 h-24 rounded-full ${getScoreBg(atsScore.overall_score)} flex items-center justify-center mx-auto mb-4`}>
+            <div className="w-32 h-32 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4 border-2 border-slate-300">
               <div className="text-center">
-                <div className={`text-3xl font-bold ${getScoreColor(atsScore.overall_score)}`}>
+                <div className="text-4xl font-bold text-slate-900">
                   {(atsScore.overall_score * 100).toFixed(0)}%
                 </div>
-                <div className="text-sm text-slate-600">{getScoreLabel(atsScore.overall_score)}</div>
+                <div className="text-sm font-medium text-slate-600 mt-1">{getScoreLabel(atsScore.overall_score)}</div>
               </div>
             </div>
           </div>
 
           {/* Detailed Scores */}
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-3">
             {[
               { label: "Keyword Optimization", score: atsScore.keyword_optimization, weight: "25%" },
               { label: "Content Quality", score: atsScore.content_quality, weight: "20%" },
@@ -450,18 +438,18 @@ const NaviCVApp = () => {
               { label: "Contact Info", score: atsScore.contact_info, weight: "5%" },
               { label: "Experience Detail", score: atsScore.experience_detail, weight: "5%" }
             ].map((item, index) => (
-              <div key={index} className="bg-slate-50 rounded-lg p-4">
+              <div key={index} className="bg-slate-50 rounded-lg p-3 border border-slate-100">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-slate-700">{item.label}</span>
+                  <span className="text-xs font-medium text-slate-700">{item.label}</span>
                   <span className="text-xs text-slate-500">{item.weight}</span>
                 </div>
-                <div className="w-full bg-slate-200 rounded-full h-2">
+                <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
                   <div 
-                    className={`h-2 rounded-full ${getScoreColor(item.score).replace('text-', 'bg-')}`}
+                    className="h-2 rounded-full bg-slate-700 transition-all duration-500"
                     style={{ width: `${item.score * 100}%` }}
                   ></div>
                 </div>
-                <div className="text-xs text-slate-600 mt-1">
+                <div className="text-xs text-slate-600 mt-1.5 font-medium">
                   {(item.score * 100).toFixed(0)}%
                 </div>
               </div>
@@ -473,21 +461,21 @@ const NaviCVApp = () => {
 
     // Weaknesses Component
     const WeaknessesCard = ({ weaknesses }) => {
-      const getSeverityColor = (severity) => {
+      const getSeverityStyle = (severity) => {
         switch (severity) {
-          case "high": return "text-red-600 bg-red-50 border-red-200";
-          case "medium": return "text-amber-600 bg-amber-50 border-amber-200";
-          case "low": return "text-blue-600 bg-blue-50 border-blue-200";
-          default: return "text-slate-600 bg-slate-50 border-slate-200";
+          case "high": return "bg-slate-100 border-slate-300";
+          case "medium": return "bg-slate-50 border-slate-200";
+          case "low": return "bg-slate-50 border-slate-200";
+          default: return "bg-slate-50 border-slate-200";
         }
       };
 
-      const getSeverityIcon = (severity) => {
+      const getSeverityLabel = (severity) => {
         switch (severity) {
-          case "high": return "🔴";
-          case "medium": return "🟡";
-          case "low": return "🔵";
-          default: return "⚪";
+          case "high": return "High";
+          case "medium": return "Medium";
+          case "low": return "Low";
+          default: return "Info";
         }
       };
 
@@ -495,18 +483,17 @@ const NaviCVApp = () => {
         return (
           <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6 mb-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-slate-900">Resume Quality Check</h3>
-                <p className="text-slate-600">No major issues detected!</p>
+                <p className="text-sm text-slate-600">No major issues detected</p>
               </div>
             </div>
-            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-              <p className="text-emerald-800 text-sm">
-                Great job! Your resume appears to be well-structured and ATS-friendly. 
-                Continue to refine it based on specific job requirements.
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <p className="text-slate-700 text-sm">
+                Your resume is well-structured and ATS-friendly. Continue refining based on specific job requirements.
               </p>
             </div>
           </div>
@@ -516,39 +503,30 @@ const NaviCVApp = () => {
       return (
         <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6 mb-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center">
-              <div className="w-6 h-6 text-white">⚠️</div>
+            <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center">
+              <div className="w-6 h-6 text-white text-lg">⚠</div>
             </div>
             <div>
-              <h3 className="text-xl font-bold text-slate-900">Resume Improvement Areas</h3>
-              <p className="text-slate-600">{weaknesses.length} areas identified for improvement</p>
+              <h3 className="text-xl font-bold text-slate-900">Areas for Improvement</h3>
+              <p className="text-sm text-slate-600">{weaknesses.length} suggestion{weaknesses.length > 1 ? 's' : ''}</p>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {weaknesses.map((weakness, index) => (
-              <div key={index} className={`border rounded-lg p-4 ${getSeverityColor(weakness.severity)}`}>
+              <div key={index} className={`border rounded-lg p-4 ${getSeverityStyle(weakness.severity)}`}>
                 <div className="flex items-start gap-3">
-                  <span className="text-lg">{getSeverityIcon(weakness.severity)}</span>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className="font-semibold text-slate-900">{weakness.category}</h4>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
-                        weakness.severity === 'high' ? 'bg-red-100 text-red-700' :
-                        weakness.severity === 'medium' ? 'bg-amber-100 text-amber-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>
-                        {weakness.severity}
+                      <h4 className="font-medium text-slate-900">{weakness.category}</h4>
+                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-slate-200 text-slate-700">
+                        {getSeverityLabel(weakness.severity)}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-700 mb-2">{weakness.description}</p>
-                    <div className="bg-white/50 rounded p-3 mb-2">
-                      <p className="text-sm font-medium text-slate-800 mb-1">💡 Suggestion:</p>
-                      <p className="text-sm text-slate-700">{weakness.suggestion}</p>
-                    </div>
-                    <div className="bg-white/50 rounded p-3">
-                      <p className="text-sm font-medium text-slate-800 mb-1">🎯 Impact:</p>
-                      <p className="text-sm text-slate-700">{weakness.impact}</p>
+                    <p className="text-sm text-slate-600 mb-2">{weakness.description}</p>
+                    <div className="text-sm text-slate-700 space-y-1">
+                      <div><span className="font-medium">Suggestion:</span> {weakness.suggestion}</div>
+                      <div><span className="font-medium">Impact:</span> {weakness.impact}</div>
                     </div>
                   </div>
                 </div>
