@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Dict, List
 
 import faiss
@@ -10,6 +11,51 @@ from .models import JobMatch
 
 
 logger = logging.getLogger(__name__)
+
+
+def clean_text_encoding(text: str) -> str:
+    """Clean common UTF-8 encoding issues from text"""
+    if not text:
+        return ""
+    
+    # Fix double-encoded UTF-8 characters
+    # Remove Â characters that appear before special characters
+    cleaned = text.replace('Â ', ' ').replace('Â', '')
+    
+    # Fix common UTF-8 encoding issues - apostrophes and quotes
+    cleaned = cleaned.replace('â€™', "'").replace('â€œ', '"').replace('â€', '"')
+    cleaned = cleaned.replace('â€"', '—').replace('â€"', '–').replace('â€¦', '…')
+    cleaned = cleaned.replace('â€"', '™').replace('â€"', '"').replace('â€"', '"')
+    
+    # Fix apostrophe variations (including when word starts with it)
+    cleaned = cleaned.replace('â€™s', "'s").replace('â€™t', "'t")
+    cleaned = cleaned.replace('â€™ll', "'ll").replace('â€™ve', "'ve")
+    cleaned = cleaned.replace('â€™re', "'re").replace('â€™m', "'m")
+    cleaned = cleaned.replace('â€™d', "'d")
+    
+    # Fix common Latin character encoding issues
+    cleaned = cleaned.replace('Ã¡', 'á').replace('Ã©', 'é').replace('Ã­', 'í')
+    cleaned = cleaned.replace('Ã³', 'ó').replace('Ãº', 'ú').replace('Ã±', 'ñ')
+    cleaned = cleaned.replace('Ã¡', 'Á').replace('Ã‰', 'É').replace('Ã', 'Í')
+    cleaned = cleaned.replace('Ã"', 'Ó').replace('Ãš', 'Ú').replace('Ã\'', 'Ñ')
+    
+    # Fix HTML entities
+    cleaned = cleaned.replace('&lt;', '<').replace('&gt;', '>')
+    cleaned = cleaned.replace('&amp;', '&').replace('&quot;', '"')
+    cleaned = cleaned.replace('&#x27;', "'").replace('&#39;', "'")
+    cleaned = cleaned.replace('&nbsp;', ' ').replace('&mdash;', '—')
+    cleaned = cleaned.replace('&ndash;', '–')
+    
+    # Fix any remaining encoding artifacts
+    # Handle cases where text might be corrupted (like "orldâ€™s" should be "world's")
+    # First try to fix if there's a letter before "orld"
+    cleaned = re.sub(r'([a-z])orldâ€™s', r'\1orld\'s', cleaned, flags=re.IGNORECASE)
+    # Then fix standalone "orldâ€™s" (where "w" was lost) - check if it's at word boundary
+    cleaned = re.sub(r'\borldâ€™s\b', "world's", cleaned, flags=re.IGNORECASE)
+    # Also handle cases where it might appear in the middle of text
+    cleaned = cleaned.replace('orldâ€™s', "world's")
+    
+    return cleaned
 
 
 def calculate_semantic_similarity(sentence_model, text1: str, text2: str) -> float:
@@ -60,13 +106,20 @@ def normalize_job_data(job: Dict) -> Dict:
     try:
         source = job.get("source", "unknown")
         if source.startswith("adzuna"):
+            title = clean_text_encoding(job.get("title", job.get("display_name", "Unknown Position")))
+            company = clean_text_encoding(job.get("company", {}).get("display_name", "Unknown Company"))
+            location = clean_text_encoding(job.get("location", {}).get("display_name", "Remote"))
+            description = clean_text_encoding(job.get("description", ""))
+            category_label = clean_text_encoding(job.get("category", {}).get("label", ""))
+            tags = category_label.split(", ") if category_label else []
+            
             return {
                 "job_id": str(job.get("id", "")),
-                "title": job.get("title", job.get("display_name", "Unknown Position")),
-                "company": job.get("company", {}).get("display_name", "Unknown Company"),
-                "location": job.get("location", {}).get("display_name", "Remote"),
-                "description": job.get("description", ""),
-                "tags": job.get("category", {}).get("label", "").split(", ") if job.get("category", {}).get("label") else [],
+                "title": title,
+                "company": company,
+                "location": location,
+                "description": description,
+                "tags": tags,
                 "salary": f"{job.get('salary_min', '')} - {job.get('salary_max', '')}" if job.get("salary_min") or job.get("salary_max") else "Not specified",
                 "url": job.get("redirect_url", ""),
                 "posted_date": job.get("created", ""),
@@ -76,13 +129,19 @@ def normalize_job_data(job: Dict) -> Dict:
                 "keyword_score": 0.0,
             }
         else:
+            title = clean_text_encoding(job.get("position", job.get("title", "Unknown Position")))
+            company = clean_text_encoding(job.get("company", "Unknown Company"))
+            location = clean_text_encoding(job.get("location", "Remote"))
+            description = clean_text_encoding(job.get("description", ""))
+            tags = [clean_text_encoding(tag) for tag in job.get("tags", [])]
+            
             return {
                 "job_id": str(job.get("id", "")),
-                "title": job.get("position", job.get("title", "Unknown Position")),
-                "company": job.get("company", "Unknown Company"),
-                "location": job.get("location", "Remote"),
-                "description": job.get("description", ""),
-                "tags": job.get("tags", []),
+                "title": title,
+                "company": company,
+                "location": location,
+                "description": description,
+                "tags": tags,
                 "salary": job.get("salary", "Not specified"),
                 "url": job.get("url", ""),
                 "posted_date": job.get("date", ""),

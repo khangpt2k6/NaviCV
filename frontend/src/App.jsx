@@ -192,7 +192,7 @@ const NaviCVApp = () => {
       // Remove Â characters that appear before special characters (common encoding issue)
       .replace(/Â /g, ' ')
       .replace(/Â/g, '')
-      // Fix common UTF-8 encoding issues
+      // Fix common UTF-8 encoding issues - apostrophes and quotes
       .replace(/â€™/g, "'")
       .replace(/â€œ/g, '"')
       .replace(/â€/g, '"')
@@ -203,6 +203,17 @@ const NaviCVApp = () => {
       .replace(/â€™/g, "'")
       .replace(/â€"/g, '"')
       .replace(/â€"/g, '"')
+      // Fix apostrophe variations
+      .replace(/â€™s/g, "'s")
+      .replace(/â€™t/g, "'t")
+      .replace(/â€™ll/g, "'ll")
+      .replace(/â€™ve/g, "'ve")
+      .replace(/â€™re/g, "'re")
+      .replace(/â€™m/g, "'m")
+      .replace(/â€™d/g, "'d")
+      // Fix corrupted text patterns (like "orldâ€™s" should be "world's")
+      .replace(/([a-z])orldâ€™s/gi, "$1orld's")
+      .replace(/orldâ€™s/gi, "world's")
       // Fix common Latin character encoding issues
       .replace(/Ã¡/g, 'á')
       .replace(/Ã©/g, 'é')
@@ -215,7 +226,11 @@ const NaviCVApp = () => {
       .replace(/Ã/g, 'Í')
       .replace(/Ã"/g, 'Ó')
       .replace(/Ãš/g, 'Ú')
-      .replace(/Ã'/g, 'Ñ');
+      .replace(/Ã'/g, 'Ñ')
+      // Fix additional encoding patterns
+      .replace(/â€™/g, "'")
+      .replace(/â€"/g, '"')
+      .replace(/â€"/g, '"');
 
     // Convert common HTML entities
     formatted = formatted
@@ -600,47 +615,70 @@ const NaviCVApp = () => {
     };
 
     return (
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-8">
         {/* Left Column: ATS Score & Quality Check */}
-        <div className="space-y-6">
+        <div className="space-y-6 flex flex-col">
           {/* ATS Score Card */}
           {analysis.ats_score && (
-            <ATSScoreCard 
-              atsScore={analysis.ats_score} 
-              showDetails={showATSDetails}
-              onToggleDetails={() => setShowATSDetails(!showATSDetails)}
-            />
+            <div className="flex-shrink-0">
+              <ATSScoreCard 
+                atsScore={analysis.ats_score} 
+                showDetails={showATSDetails}
+                onToggleDetails={() => setShowATSDetails(!showATSDetails)}
+              />
+            </div>
           )}
           
           {/* Weaknesses Card */}
-          {analysis.weaknesses && <WeaknessesCard weaknesses={analysis.weaknesses} />}
+          {analysis.weaknesses && (
+            <div className="flex-shrink-0">
+              <WeaknessesCard weaknesses={analysis.weaknesses} />
+            </div>
+          )}
         </div>
 
         {/* Right Column: Resume Analysis */}
-        <div className="bg-white rounded-xl shadow-md border border-slate-200 p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center">
-              <FileText className="w-6 h-6 text-white" />
+        <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-8">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center shadow-md">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-slate-900">Resume Analysis</h3>
+                <p className="text-slate-600 text-sm">AI-powered career insights</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-2xl font-bold text-slate-900">Resume Analysis</h3>
-              <p className="text-slate-600">AI-powered career insights</p>
-            </div>
+            <button
+              onClick={() => {
+                setResumeAnalysis(null);
+                setMatchedJobs([]);
+                setSelectedFile(null);
+                setError("");
+                setSuccess("");
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 rounded-lg hover:from-slate-200 hover:to-slate-300 transition-all duration-200 font-semibold text-sm border border-slate-300 shadow-sm hover:shadow-md"
+            >
+              <Upload className="w-4 h-4" />
+              Upload New
+            </button>
           </div>
 
           <div className="space-y-6">
-            <div>
-              <h4 className="font-bold text-slate-900 mb-3 flex items-center">
-                <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
-                  <Award className="w-4 h-4 text-emerald-600" />
+            {/* Skills Section */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <h4 className="font-bold text-lg text-slate-900 mb-5 flex items-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-lg flex items-center justify-center mr-3">
+                  <Award className="w-5 h-5 text-white" />
                 </div>
-                Skills ({analysis.skills.length})
+                Skills
+                <span className="ml-2 text-base font-normal text-slate-500">({analysis.skills.length})</span>
               </h4>
-              <div className="flex flex-wrap gap-2 mb-3">
+              <div className="flex flex-wrap gap-2.5 mb-4">
                 {skillsToShow.map((skill, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-lg text-sm font-medium"
+                    className="px-4 py-2 bg-slate-50 text-slate-700 rounded-lg text-sm font-medium border border-slate-200 hover:bg-slate-100 hover:border-slate-300 transition-all cursor-default"
                   >
                     {skill && skill.charAt(0).toUpperCase() + skill.slice(1).toLowerCase()}
                   </span>
@@ -649,99 +687,112 @@ const NaviCVApp = () => {
               {analysis.skills.length > 10 && (
                 <button
                   onClick={() => setShowAllSkills(!showAllSkills)}
-                  className="text-slate-600 hover:text-slate-800 text-sm font-medium inline-flex items-center group"
+                  className="text-slate-600 hover:text-slate-900 text-sm font-medium inline-flex items-center group"
                 >
                   {showAllSkills
                     ? "Show Less"
-                    : `+${analysis.skills.length - 10} more skills`}
-                  <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                    : `Show ${analysis.skills.length - 10} more skills`}
+                  <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               )}
             </div>
 
-            <div>
-              <h4 className="font-bold text-slate-900 mb-3 flex items-center">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                  <TrendingUp className="w-4 h-4 text-blue-600" />
+            {/* Experience Level */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <h4 className="font-bold text-lg text-slate-900 mb-4 flex items-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-lg flex items-center justify-center mr-3">
+                  <TrendingUp className="w-5 h-5 text-white" />
                 </div>
                 Experience Level
               </h4>
-              <div className="bg-slate-50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-slate-800">
+              <div className="bg-slate-50 rounded-lg p-5 border border-slate-100">
+                <div className="text-3xl font-bold text-slate-900 mb-1">
                   {analysis.experience_years
                     ? `${analysis.experience_years} years`
                     : "Entry Level"}
                 </div>
-                <div className="text-sm text-slate-600 mt-1">
+                <div className="text-sm text-slate-600">
                   Professional experience
                 </div>
               </div>
             </div>
 
-            <div>
-              <h4 className="font-bold text-slate-900 mb-3 flex items-center">
-                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                  <Briefcase className="w-4 h-4 text-purple-600" />
+            {/* Career History */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <h4 className="font-bold text-lg text-slate-900 mb-5 flex items-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-lg flex items-center justify-center mr-3">
+                  <Briefcase className="w-5 h-5 text-white" />
                 </div>
-                Career History ({analysis.job_titles.length})
+                Career History
+                <span className="ml-2 text-base font-normal text-slate-500">({analysis.job_titles.length})</span>
               </h4>
-              <div className="space-y-2 mb-3">
+              <div className="space-y-4">
                 {jobTitlesToShow.map((title, index) => (
                   <div
                     key={index}
-                    className="flex items-start gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors"
+                    className="flex items-start gap-4 pb-4 border-b border-slate-100 last:border-0 last:pb-0"
                   >
-                    <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <span className="text-slate-700 text-sm">{title && title.charAt(0).toUpperCase() + title.slice(1)}</span>
+                    <div className="w-1 h-1 bg-slate-400 rounded-full mt-2.5 flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <h5 className="text-base font-semibold text-slate-900 mb-1">
+                        {title && title.charAt(0).toUpperCase() + title.slice(1)}
+                      </h5>
+                    </div>
                   </div>
                 ))}
               </div>
               {analysis.job_titles.length > 5 && (
                 <button
                   onClick={() => setShowAllJobTitles(!showAllJobTitles)}
-                  className="text-slate-600 hover:text-slate-800 text-sm font-medium inline-flex items-center group"
+                  className="mt-4 text-slate-600 hover:text-slate-900 text-sm font-medium inline-flex items-center group"
                 >
                   {showAllJobTitles
                     ? "Show Less"
-                    : `+${analysis.job_titles.length - 5} more positions`}
-                  <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                    : `Show ${analysis.job_titles.length - 5} more positions`}
+                  <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               )}
             </div>
 
-            <div>
-              <h4 className="font-bold text-slate-900 mb-3 flex items-center">
-                <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
-                  <BookOpen className="w-4 h-4 text-amber-600" />
+            {/* Education */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <h4 className="font-bold text-lg text-slate-900 mb-5 flex items-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-lg flex items-center justify-center mr-3">
+                  <BookOpen className="w-5 h-5 text-white" />
                 </div>
-                Education ({analysis.education.length})
+                Education
+                <span className="ml-2 text-base font-normal text-slate-500">({analysis.education.length})</span>
               </h4>
-              <div className="space-y-2 mb-3">
+              <div className="space-y-4">
                 {analysis.education.length > 0 ? (
                   <>
                     {educationToShow.map((edu, index) => (
                       <div
                         key={index}
-                        className="flex items-start gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors"
+                        className="flex items-start gap-4 pb-4 border-b border-slate-100 last:border-0 last:pb-0"
                       >
-                        <div className="w-2 h-2 bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="text-slate-700 text-sm">{edu && edu.charAt(0).toUpperCase() + edu.slice(1)}</span>
+                        <div className="w-1 h-1 bg-slate-400 rounded-full mt-2.5 flex-shrink-0"></div>
+                        <div className="flex-1">
+                          <p className="text-sm text-slate-700 leading-relaxed">
+                            {edu && edu.charAt(0).toUpperCase() + edu.slice(1)}
+                          </p>
+                        </div>
                       </div>
                     ))}
                     {analysis.education.length > 3 && (
                       <button
                         onClick={() => setShowAllEducation(!showAllEducation)}
-                        className="text-slate-600 hover:text-slate-800 text-sm font-medium inline-flex items-center group"
+                        className="mt-4 text-slate-600 hover:text-slate-900 text-sm font-medium inline-flex items-center group"
                       >
                         {showAllEducation
                           ? "Show Less"
-                          : `+${analysis.education.length - 3} more`}
-                        <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
+                          : `Show ${analysis.education.length - 3} more`}
+                        <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
                       </button>
                     )}
                   </>
                 ) : (
-                  <div className="text-slate-500 text-sm italic p-2">
+                  <div className="text-slate-500 text-sm italic p-4 bg-slate-50 rounded-lg border border-slate-100">
                     No education information detected
                   </div>
                 )}
@@ -751,13 +802,13 @@ const NaviCVApp = () => {
 
           {/* Keywords Section */}
           {analysis.keywords && analysis.keywords.length > 0 && (
-            <div className="mt-8 p-6 bg-slate-50 rounded-xl">
+            <div className="mt-6 p-5 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200">
               <h4 className="font-bold text-slate-900 mb-4">Top Keywords</h4>
               <div className="flex flex-wrap gap-2">
                 {analysis.keywords.slice(0, 15).map((keyword, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-medium"
+                    className="px-3 py-1.5 bg-white/70 backdrop-blur-sm text-slate-700 rounded-lg text-xs font-medium border border-slate-200/50 shadow-sm"
                   >
                     {keyword && keyword.charAt(0).toUpperCase() + keyword.slice(1).toLowerCase()}
                   </span>
@@ -766,12 +817,13 @@ const NaviCVApp = () => {
             </div>
           )}
 
-          <div className="mt-8 p-6 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl text-white">
+          {/* Career Summary */}
+          <div className="mt-6 p-6 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl text-white shadow-lg">
             <h4 className="font-bold mb-3 flex items-center">
               <Compass className="w-5 h-5 mr-2" />
               Career Summary
             </h4>
-            <p className="leading-relaxed opacity-90">{analysis.summary}</p>
+            <p className="leading-relaxed opacity-95 text-sm">{analysis.summary}</p>
           </div>
         </div>
       </div>
@@ -1084,6 +1136,25 @@ const NaviCVApp = () => {
         {/* Upload Tab */}
         {activeTab === "upload" && (
           <div className="space-y-8">
+            {/* Reupload Button - Show when analysis exists */}
+            {resumeAnalysis && !loading && (
+              <div className="flex justify-end">
+                <button
+                  onClick={() => {
+                    setResumeAnalysis(null);
+                    setMatchedJobs([]);
+                    setSelectedFile(null);
+                    setError("");
+                    setSuccess("");
+                  }}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl hover:from-slate-800 hover:to-slate-900 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
+                >
+                  <Upload className="w-5 h-5" />
+                  Upload New Resume
+                </button>
+              </div>
+            )}
+
             {!resumeAnalysis && !loading && <FileUploadZone />}
 
             {loading && (
