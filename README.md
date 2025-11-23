@@ -10,40 +10,18 @@ NaviCV is an all-in-one AI-powered career assistant that offers advanced resume 
   <img width="900" height="909" alt="image" src="https://github.com/user-attachments/assets/5c51f727-fbfc-4878-a55a-199d47942894" />
 </p>
 
-
 ## Features
 
 - **AI Resume Analysis**: Extract skills, experience, and insights from resumes
 - **ATS Score Calculation**: Optimize resumes for Applicant Tracking Systems
 - **Multi-Source Job Fetching**: Get jobs from RemoteOK and Adzuna APIs
 - **Job Matching**: AI-powered job matching based on resume content
-- **Simple Authentication**: Local storage-based user authentication
 - **Resume Weakness Detection**: Identify areas for improvement
 - **Modern UI**: Beautiful, responsive interface
 
 ## Quick Start
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/NaviCV.git
-cd NaviCV
-```
-
-### 2. Set Up Environment Variables
-
-Copy the example environment file and configure your settings:
-
-Edit `.env` and add your configuration:
-
-```env
-
-# Optional: Adzuna API (Get free keys from https://developer.adzuna.com/)
-ADZUNA_APP_ID=your_adzuna_app_id
-ADZUNA_API_KEY=your_adzuna_api_key
-```
-
-### 3. Install Dependencies
+### Installation
 
 #### Frontend
 ```bash
@@ -55,17 +33,31 @@ npm install
 ```bash
 cd backend
 pip install -r requirements.txt
+python -m spacy download en_core_web_sm
 ```
 
-### 4. Run the Application
+### Running the Application
 
 #### Development Mode
+
+**Frontend:**
 ```bash
-# Frontend (in one terminal)
 cd frontend
 npm run dev
+```
 
-# Backend (in another terminal)
+**Backend:**
+```bash
 cd backend
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
+
+#### Docker Compose (Recommended)
+```bash
+docker-compose up --build
+```
+
+The application will be available at:
+- Frontend: `http://localhost:5173` (dev) or `http://localhost:3000` (production)
+- Backend API: `http://localhost:8000`
+- API Docs: `http://localhost:8000/docs`
