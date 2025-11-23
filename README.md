@@ -8,7 +8,6 @@ NaviCV is an all-in-one AI-powered career assistant that offers advanced resume 
 
 <p align="center">
   <img width="900" height="909" alt="image" src="https://github.com/user-attachments/assets/5c51f727-fbfc-4878-a55a-199d47942894" />
-
 </p>
 
 
