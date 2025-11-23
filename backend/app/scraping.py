@@ -1,8 +1,11 @@
 import logging
 import os
+import re
 from typing import List, Dict, Optional
+from urllib.parse import urljoin, urlparse
 
 import aiohttp
+from bs4 import BeautifulSoup
 
 
 logger = logging.getLogger(__name__)
@@ -148,6 +151,151 @@ class JobScraper:
                     return []
         except Exception as e:
             logger.error(f"Error searching Adzuna jobs: {str(e)}")
+            return []
+
+    async def scrape_jobs_from_html(self, url: str, limit: int = 50) -> List[Dict]:
+        """Scrape jobs from HTML pages using BeautifulSoup"""
+        try:
+            session = await self.get_session()
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Accept-Encoding": "gzip, deflate",
+            }
+            
+            async with session.get(url, headers=headers, timeout=30) as response:
+                if response.status != 200:
+                    logger.warning(f"Failed to fetch {url}: {response.status}")
+                    return []
+                
+                # Get content and handle encoding properly
+                content = await response.read()
+                text = content.decode('utf-8', errors='ignore')
+                
+                # Fix common encoding issues (double-encoded UTF-8)
+                text = text.replace('Â ', ' ').replace('Â', '')
+                text = text.replace('â€™', "'").replace('â€œ', '"').replace('â€', '"')
+                text = text.replace('â€"', '—').replace('â€"', '–').replace('â€¦', '…')
+                text = text.replace('Ã¡', 'á').replace('Ã©', 'é').replace('Ã­', 'í')
+                text = text.replace('Ã³', 'ó').replace('Ãº', 'ú').replace('Ã±', 'ñ')
+                
+                soup = BeautifulSoup(text, 'html.parser')
+                jobs = []
+                
+                # Try to find job listings (common patterns)
+                # Look for common job listing containers
+                job_elements = soup.find_all(['article', 'div', 'li'], class_=re.compile(r'job|listing|post|card', re.I))
+                
+                if not job_elements:
+                    # Try alternative selectors
+                    job_elements = soup.find_all(['div', 'article'], attrs={'data-job-id': True}) or \
+                                  soup.find_all(['div', 'article'], attrs={'id': re.compile(r'job', re.I)})
+                
+                for element in job_elements[:limit]:
+                    try:
+                        job = {}
+                        
+                        # Extract title
+                        title_elem = element.find(['h1', 'h2', 'h3', 'h4'], class_=re.compile(r'title|heading|name', re.I))
+                        if not title_elem:
+                            title_elem = element.find('a', class_=re.compile(r'title|job', re.I))
+                        job['title'] = title_elem.get_text(strip=True) if title_elem else 'Untitled Position'
+                        
+                        # Extract company
+                        company_elem = element.find(['span', 'div', 'a'], class_=re.compile(r'company|employer|organization', re.I))
+                        if not company_elem:
+                            company_elem = element.find('strong', class_=re.compile(r'company', re.I))
+                        job['company'] = company_elem.get_text(strip=True) if company_elem else 'Unknown Company'
+                        
+                        # Extract location
+                        location_elem = element.find(['span', 'div'], class_=re.compile(r'location|place|city', re.I))
+                        if not location_elem:
+                            location_elem = element.find(string=re.compile(r'[A-Z][a-z]+,?\s+[A-Z]{2}|Remote|Remote work', re.I))
+                        if location_elem:
+                            job['location'] = location_elem.get_text(strip=True) if hasattr(location_elem, 'get_text') else str(location_elem).strip()
+                        else:
+                            job['location'] = 'Location not specified'
+                        
+                        # Extract description
+                        desc_elem = element.find(['div', 'p', 'span'], class_=re.compile(r'description|summary|details|content', re.I))
+                        if not desc_elem:
+                            desc_elem = element.find('p')
+                        job['description'] = desc_elem.get_text(strip=True, separator=' ') if desc_elem else ''
+                        
+                        # Extract URL
+                        link_elem = element.find('a', href=True)
+                        if link_elem:
+                            href = link_elem.get('href')
+                            job['url'] = urljoin(url, href) if href else url
+                        else:
+                            job['url'] = url
+                        
+                        # Extract tags/skills
+                        tags = []
+                        tag_elements = element.find_all(['span', 'div'], class_=re.compile(r'tag|skill|badge|keyword', re.I))
+                        for tag_elem in tag_elements:
+                            tag_text = tag_elem.get_text(strip=True)
+                            if tag_text and len(tag_text) < 30:  # Reasonable tag length
+                                tags.append(tag_text)
+                        job['tags'] = tags[:10]  # Limit to 10 tags
+                        
+                        # Generate job ID
+                        job['id'] = f"scraped_{hash(job.get('url', ''))}"
+                        
+                        if job['title'] and job['title'] != 'Untitled Position':
+                            jobs.append(job)
+                    except Exception as e:
+                        logger.debug(f"Error parsing job element: {str(e)}")
+                        continue
+                
+                logger.info(f"Scraped {len(jobs)} jobs from {url}")
+                return jobs
+        except Exception as e:
+            logger.error(f"Error scraping jobs from {url}: {str(e)}")
+            return []
+
+    async def fetch_jobs_from_rss(self, rss_url: str, limit: int = 50) -> List[Dict]:
+        """Fetch jobs from RSS feeds"""
+        try:
+            session = await self.get_session()
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept": "application/rss+xml, application/xml, text/xml",
+            }
+            
+            async with session.get(rss_url, headers=headers, timeout=30) as response:
+                if response.status != 200:
+                    return []
+                
+                content = await response.text()
+                content = content.replace('Â', '').replace('â€™', "'")
+                soup = BeautifulSoup(content, 'xml')
+                
+                jobs = []
+                items = soup.find_all('item')[:limit]
+                
+                for item in items:
+                    try:
+                        job = {
+                            'title': item.find('title').get_text(strip=True) if item.find('title') else 'Untitled',
+                            'company': item.find('company').get_text(strip=True) if item.find('company') else 'Unknown',
+                            'location': item.find('location').get_text(strip=True) if item.find('location') else 'Not specified',
+                            'description': item.find('description').get_text(strip=True) if item.find('description') else '',
+                            'url': item.find('link').get_text(strip=True) if item.find('link') else '',
+                            'tags': [],
+                            'id': f"rss_{hash(item.find('link').get_text(strip=True) if item.find('link') else '')}"
+                        }
+                        if job['title'] and job['title'] != 'Untitled':
+                            jobs.append(job)
+                    except Exception as e:
+                        logger.debug(f"Error parsing RSS item: {str(e)}")
+                        continue
+                
+                logger.info(f"Fetched {len(jobs)} jobs from RSS feed")
+                return jobs
+        except Exception as e:
+            logger.error(f"Error fetching RSS feed {rss_url}: {str(e)}")
             return []
 
     def get_sample_jobs(self, limit: int) -> List[Dict]:

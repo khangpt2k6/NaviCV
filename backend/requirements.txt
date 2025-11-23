@@ -16,6 +16,9 @@ requests==2.31.0
 python-dateutil==2.8.2
 python-multipart==0.0.6
 brotli==1.1.0
+beautifulsoup4==4.12.2
+lxml==4.9.3
+html5lib==1.1
 
 # For spaCy English model (run after installing spacy)
 # python -m spacy download en_core_web_sm

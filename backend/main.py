@@ -2,23 +2,16 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from datetime import datetime
+from contextlib import asynccontextmanager
 import logging
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
+
+# Suppress non-critical asyncio connection errors on Windows
+logging.getLogger('asyncio').setLevel(logging.CRITICAL)
+
 logger = logging.getLogger(__name__)
-
-# Initialize FastAPI app
-app = FastAPI(title="JobsDreamer API", description="AI Career Assistant")
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000"],
-    allow_credentials=False,  # Set to False when using allow_origins=["*"]
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-)
 
 from app.models import JobMatch, ResumeAnalysis, MatchRequest
 from app.analysis import extract_text_from_pdf, analyze_resume
@@ -26,9 +19,40 @@ from app.matching import calculate_semantic_similarity, calculate_keyword_match
 from app.state import initialize_models, refresh_jobs_data, jobs_data, sentence_model
 
 
-@app.on_event("startup")
-async def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
     await initialize_models(load_spacy=True)
+    yield
+    # Shutdown (if needed in the future)
+    pass
+
+
+# Initialize FastAPI app with lifespan
+app = FastAPI(
+    title="JobsDreamer API",
+    description="AI Career Assistant",
+    lifespan=lifespan
+)
+
+# Add CORS middleware
+# Allow common development ports (Vite uses 5173 by default, but can use other ports if taken)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:5175",
+        "http://127.0.0.1:5175",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
 
 """
 main.py is intentionally slim; models and business logic live under app/* modules.
