@@ -14,12 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 def clean_text_encoding(text: str) -> str:
-    """Clean common UTF-8 encoding issues from text"""
     if not text:
         return ""
     
-    # Fix double-encoded UTF-8 characters
-    # Remove Â characters that appear before special characters
     cleaned = text.replace('Â ', ' ').replace('Â', '')
     
     # Fix common UTF-8 encoding issues - apostrophes and quotes
@@ -46,13 +43,8 @@ def clean_text_encoding(text: str) -> str:
     cleaned = cleaned.replace('&nbsp;', ' ').replace('&mdash;', '—')
     cleaned = cleaned.replace('&ndash;', '–')
     
-    # Fix any remaining encoding artifacts
-    # Handle cases where text might be corrupted (like "orldâ€™s" should be "world's")
-    # First try to fix if there's a letter before "orld"
     cleaned = re.sub(r'([a-z])orldâ€™s', r'\1orld\'s', cleaned, flags=re.IGNORECASE)
-    # Then fix standalone "orldâ€™s" (where "w" was lost) - check if it's at word boundary
     cleaned = re.sub(r'\borldâ€™s\b', "world's", cleaned, flags=re.IGNORECASE)
-    # Also handle cases where it might appear in the middle of text
     cleaned = cleaned.replace('orldâ€™s', "world's")
     
     return cleaned

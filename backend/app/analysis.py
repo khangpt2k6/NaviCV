@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 
 def extract_text_from_pdf(pdf_file: bytes) -> str:
-    """Extract text from PDF file."""
     try:
         pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_file))
         text = ""
@@ -25,7 +24,6 @@ def extract_text_from_pdf(pdf_file: bytes) -> str:
 
 
 def calculate_ats_score(text: str) -> ATSScore:
-    """Calculate ATS compatibility score using dynamic heuristics."""
     try:
         word_count = len(re.findall(r"\b\w{4,}\b", text))
         keyword_score = max(0.0, min(1.0, (word_count - 30) / 200))
@@ -100,7 +98,6 @@ def calculate_ats_score(text: str) -> ATSScore:
 
 
 def detect_resume_weaknesses(text: str) -> List[ResumeWeakness]:
-    """Detect potential weaknesses in resume using simple rules."""
     try:
         weaknesses: List[ResumeWeakness] = []
 
@@ -172,7 +169,6 @@ def detect_resume_weaknesses(text: str) -> List[ResumeWeakness]:
 
 
 def analyze_resume(text: str) -> ResumeAnalysis:
-    """Analyze resume text and extract key information."""
     try:
         text = text.lower()
         lines = text.split("\n")

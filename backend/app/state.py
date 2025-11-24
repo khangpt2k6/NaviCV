@@ -36,7 +36,6 @@ async def initialize_models(load_spacy=True):
 
     job_vectorizer = TfidfVectorizer(max_features=5000, stop_words="english")
     job_index = None
-    # Do not replace the list object referenced by other modules; clear instead
     jobs_data.clear()
 
     await refresh_jobs_data()
@@ -75,23 +74,7 @@ async def refresh_jobs_data():
                     )
             except Exception as e:
                 logger.error(f"Error fetching from Adzuna {country}: {str(e)}")
-
-        # Try web scraping from job boards (using publicly accessible sources)
-        scraping_sources = [
-            # Add job board URLs here - be respectful of robots.txt and terms of service
-            # Example: "https://jobs.example.com",
-        ]
         
-        for source_url in scraping_sources:
-            try:
-                scraped_jobs = await scraper.scrape_jobs_from_html(source_url, limit=20)
-                if scraped_jobs:
-                    for job in scraped_jobs:
-                        job["source"] = "scraped"
-                    all_jobs.extend(scraped_jobs)
-                    logger.info(f"Scraped {len(scraped_jobs)} jobs from {source_url}")
-            except Exception as e:
-                logger.warning(f"Error scraping from {source_url}: {str(e)}")
 
         if all_jobs:
             normalized_jobs = []
