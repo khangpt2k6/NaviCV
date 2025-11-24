@@ -70,6 +70,54 @@ export const createFormattedHTML = (text) => {
   if (!text) return "";
 
   let html = text;
+
+  const sectionHeaders = [
+    "Key Responsibilities",
+    "Responsibilities",
+    "What We Offer",
+    "What You'll Do",
+    "What You'll Get",
+    "Skills & Experience",
+    "Skills and Experience",
+    "Requirements",
+    "Qualifications",
+    "Benefits",
+    "Perks",
+    "About",
+    "About This Role",
+    "About the Role",
+    "Job Description",
+    "Overview",
+    "Additional Information",
+    "Additional Details",
+    "Company",
+    "Location",
+    "Salary",
+    "Compensation",
+    "Why Join Us",
+    "Why Work With Us",
+    "What We're Looking For",
+    "What We Need",
+    "Your Role",
+    "The Role",
+    "Position",
+    "Opportunity",
+    "Details",
+    "Summary",
+    "Description",
+  ];
+
+  const escapedHeaders = sectionHeaders.map((h) => h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  
+  const headerPattern = new RegExp(
+    `(^|\\n)\\s*(${escapedHeaders.join("|")})(:)?\\s*(?=\\n|$)`,
+    "gim"
+  );
+
+  html = html.replace(headerPattern, (match, prefix, header, colon) => {
+    return `${prefix}<div class="mt-6 mb-3"><h4 class="text-lg font-bold text-slate-900 mb-2">${header}${colon || ""}</h4></div>`;
+  });
+
   html = html.replace(/\n/g, "<br>");
   html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   html = html.replace(/<b>(.*?)<\/b>/gi, "<strong>$1</strong>");
@@ -79,6 +127,10 @@ export const createFormattedHTML = (text) => {
     /^• /gm,
     '<span class="inline-block w-2 h-2 bg-slate-400 rounded-full mr-2 mt-2"></span>'
   );
+
+  html = html.replace(/(<div[^>]*>)\s*<br>/g, "$1");
+  html = html.replace(/<br>\s*(<\/div>)/g, "$1");
+  html = html.replace(/<br><br><br>/g, "<br><br>");
 
   return html;
 };
