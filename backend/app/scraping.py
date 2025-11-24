@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
-
 class JobScraper:
     def __init__(self):
         self.session: Optional[aiohttp.ClientSession] = None
