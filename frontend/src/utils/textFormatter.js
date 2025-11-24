@@ -3,19 +3,38 @@ export const formatJobDescription = (description) => {
 
   let formatted = description;
 
+  formatted = formatted.replace(/\\n/g, "\n");
+
+  formatted = formatted.replace(/——¢/g, "•");
+  formatted = formatted.replace(/—¢/g, "•");
+
+  formatted = formatted.replace(/(^|\n)\s*â\s+/gm, "$1• ");
+  formatted = formatted.replace(/\s+â\s+/g, " → ");
+
+  formatted = formatted.replace(/—s\b/g, "'s");
+  formatted = formatted.replace(/—t\b/g, "'t");
+  formatted = formatted.replace(/—ll\b/g, "'ll");
+  formatted = formatted.replace(/—ve\b/g, "'ve");
+  formatted = formatted.replace(/—re\b/g, "'re");
+  formatted = formatted.replace(/—m\b/g, "'m");
+  formatted = formatted.replace(/—d\b/g, "'d");
+
+  formatted = formatted.replace(/—(\w+)—/g, '"$1"');
+
+  formatted = formatted.replace(/(^|\n)\s*—\s+/gm, "$1• ");
+
+  formatted = formatted.replace(/(\b[A-Z][A-Za-z\/]*)\s*—\s*([A-Z][A-Za-z\/]*\b)/g, "$1 → $2");
+
   formatted = formatted
-    .replace(/Â /g, ' ')
-    .replace(/Â/g, '')
+    .replace(/Â ?/g, " ")
     .replace(/â€™/g, "'")
     .replace(/â€œ/g, '"')
     .replace(/â€/g, '"')
-    .replace(/â€"/g, '—')
-    .replace(/â€"/g, '–')
-    .replace(/â€¦/g, '…')
-    .replace(/â€"/g, '™')
-    .replace(/â€™/g, "'")
-    .replace(/â€"/g, '"')
-    .replace(/â€"/g, '"')
+    .replace(/â€"/g, "—")
+    .replace(/â€"/g, "–")
+    .replace(/â€¦/g, "…")
+    .replace(/â€¢/g, "•")
+    .replace(/â¢/g, "•")
     .replace(/â€™s/g, "'s")
     .replace(/â€™t/g, "'t")
     .replace(/â€™ll/g, "'ll")
@@ -25,21 +44,20 @@ export const formatJobDescription = (description) => {
     .replace(/â€™d/g, "'d")
     .replace(/([a-z])orldâ€™s/gi, "$1orld's")
     .replace(/orldâ€™s/gi, "world's")
-    .replace(/Ã¡/g, 'á')
-    .replace(/Ã©/g, 'é')
-    .replace(/Ã­/g, 'í')
-    .replace(/Ã³/g, 'ó')
-    .replace(/Ãº/g, 'ú')
-    .replace(/Ã±/g, 'ñ')
-    .replace(/Ã¡/g, 'Á')
-    .replace(/Ã‰/g, 'É')
-    .replace(/Ã/g, 'Í')
-    .replace(/Ã"/g, 'Ó')
-    .replace(/Ãš/g, 'Ú')
-    .replace(/Ã'/g, 'Ñ')
-    .replace(/â€™/g, "'")
-    .replace(/â€"/g, '"')
-    .replace(/â€"/g, '"');
+    .replace(/Ã¡/g, "á")
+    .replace(/Ã©/g, "é")
+    .replace(/Ã­/g, "í")
+    .replace(/Ã³/g, "ó")
+    .replace(/Ãº/g, "ú")
+    .replace(/Ã±/g, "ñ")
+    .replace(/Ã‰/g, "É")
+    .replace(/Ã"/g, "Ó")
+    .replace(/Ãš/g, "Ú")
+    .replace(/Ã'/g, "Ñ")
+    .replace(/ð[^\s]*/g, "");
+
+  // Clean any remaining â that wasn't caught (fallback to dash)
+  formatted = formatted.replace(/â/g, "—");
 
   formatted = formatted
     .replace(/&lt;/g, "<")
@@ -74,16 +92,19 @@ export const createFormattedHTML = (text) => {
   const sectionHeaders = [
     "Key Responsibilities",
     "Responsibilities",
+    "Accountabilities",
     "What We Offer",
     "What You'll Do",
     "What You'll Get",
     "Skills & Experience",
     "Skills and Experience",
     "Requirements",
+    "Required Qualifications",
     "Qualifications",
     "Benefits",
     "Perks",
     "About",
+    "About Us",
     "About This Role",
     "About the Role",
     "Job Description",
@@ -95,16 +116,20 @@ export const createFormattedHTML = (text) => {
     "Salary",
     "Compensation",
     "Why Join Us",
+    "Why Join WISEcode",
     "Why Work With Us",
     "What We're Looking For",
     "What We Need",
     "Your Role",
     "The Role",
+    "The Opportunity",
     "Position",
     "Opportunity",
     "Details",
     "Summary",
     "Description",
+    "How Principal Engineers Operate at WISEcode",
+    "AI Skills & Leadership",
   ];
 
   const escapedHeaders = sectionHeaders.map((h) => h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
@@ -134,5 +159,3 @@ export const createFormattedHTML = (text) => {
 
   return html;
 };
-
-
