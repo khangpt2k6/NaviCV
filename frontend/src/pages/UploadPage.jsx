@@ -13,8 +13,8 @@ export const UploadPage = ({
 }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [_error, setError] = useState("");
+  const [_success, setSuccess] = useState("");
 
   const handleFileUpload = async (file) => {
     if (!file) return;

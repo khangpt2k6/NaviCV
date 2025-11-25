@@ -23,7 +23,7 @@ export const formatJobDescription = (description) => {
 
   formatted = formatted.replace(/(^|\n)\s*—\s+/gm, "$1• ");
 
-  formatted = formatted.replace(/(\b[A-Z][A-Za-z\/]*)\s*—\s*([A-Z][A-Za-z\/]*\b)/g, "$1 → $2");
+  formatted = formatted.replace(/(\b[A-Z][A-Za-z/]*)\s*—\s*([A-Z][A-Za-z/]*\b)/g, "$1 → $2");
 
   formatted = formatted
     .replace(/Â ?/g, " ")
