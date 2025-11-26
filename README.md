@@ -62,8 +62,3 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```bash
 docker-compose up --build
 ```
-
-The application will be available at:
-- Frontend: `http://localhost:5173` (dev) or `http://localhost:3000` (production)
-- Backend API: `http://localhost:8000`
-- API Docs: `http://localhost:8000/docs`
