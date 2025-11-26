@@ -2,23 +2,7 @@ name: Build & Push to GHCR
 
 on:
   push:
-    branches:
-      - main
-      - master
-    tags:
-      - 'v*'
-  pull_request:
-    branches:
-      - main
-      - master
-
-env:
-  GHCR_IMAGE: ghcr.io/${{ github.repository }}
-
-jobs:
-  check-version:
-    name: Check Version
-    runs-on: ubuntu-latest
+    bran
     outputs:
       should_skip: ${{ steps.check.outputs.should_skip }}
     steps:
