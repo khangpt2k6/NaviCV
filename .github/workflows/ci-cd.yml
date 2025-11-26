@@ -2,16 +2,18 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, master ]
+    tags:
+      - 'v*'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, master ]
 
 env:
   NODE_VERSION: '18'
   PYTHON_VERSION: '3.11'
+  GHCR_IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
-  # Backend Testing and Linting
   backend-test:
     runs-on: ubuntu-latest
     name: Backend Tests
@@ -57,7 +59,6 @@ jobs:
         flags: backend
         name: backend-coverage
 
-  # Frontend Testing
   frontend-test:
     runs-on: ubuntu-latest
     name: Frontend Tests
@@ -95,7 +96,6 @@ jobs:
         flags: frontend
         name: frontend-coverage
 
-  # Integration Testing
   integration-test:
     runs-on: ubuntu-latest
     name: Integration Tests
@@ -144,46 +144,15 @@ jobs:
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
 
-  # Build Frontend
-  build-frontend:
-    runs-on: ubuntu-latest
-    name: Build Frontend
+  build-and-push-ghcr:
+    name: Build & Push to GHCR
     needs: [integration-test]
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Node.js ${{ env.NODE_VERSION }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
-    
-    - name: Install dependencies
-      run: |
-        cd frontend
-        npm ci
-    
-    - name: Build frontend
-      run: |
-        cd frontend
-        npm run build
-    
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: frontend-build
-        path: frontend/dist
-
-  # Build Backend Docker Image
-  build-backend:
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
-    name: Build Backend Docker Image
-    needs: [integration-test]
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    permissions:
+      contents: read
+      packages: write
     
     steps:
     - name: Checkout code
@@ -192,18 +161,54 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
-    - name: Build backend image
+    - name: Extract version from pyproject.toml
+      id: version
+      run: |
+        if [ -f "pyproject.toml" ]; then
+          VERSION=$(grep -Po '(?<=^version = ")[^"]+' pyproject.toml || grep -Po "(?<=^version = ')[^']+" pyproject.toml || echo "1.0.0")
+        else
+          VERSION="1.0.0"
+        fi
+        echo "VERSION=$VERSION"
+        echo "VERSION_TAG=v$VERSION" >> $GITHUB_ENV
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+    
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.GHCR_IMAGE }}
+        tags: |
+          type=raw,value=${{ env.VERSION_TAG }}
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=sha,prefix={{branch}}-
+          type=ref,event=branch
+    
+    - name: Build and Push Docker image to GHCR
       uses: docker/build-push-action@v5
       with:
-        context: ./backend
-        file: ./backend/Dockerfile
-        push: false
-        tags: navicv-backend:latest
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        platforms: linux/amd64,linux/arm64
+        build-args: |
+          VERSION=${{ env.VERSION_TAG }}
+          BUILD_DATE=${{ github.event.head_commit.timestamp }}
+          VCS_REF=${{ github.sha }}
     
-    - name: Upload Docker image
-      uses: actions/upload-artifact@v4
-      with:
-        name: backend-image
-        path: /tmp/backend-image.tar
+    - name: Output image info
+      run: |
+        echo "✅ Successfully built and pushed:"
+        echo "  - ${{ env.GHCR_IMAGE }}:${{ env.VERSION_TAG }}"
+        echo "  - ${{ env.GHCR_IMAGE }}:latest"
