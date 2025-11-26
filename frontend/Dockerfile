@@ -13,6 +13,9 @@ RUN npm ci
 # Copy source code (excluding node_modules)
 COPY . .
 
+# Make entrypoint script executable
+RUN chmod +x entrypoint.sh
+
 # Build the app
 RUN npm run build
 
@@ -23,6 +26,6 @@ RUN npm install -g serve
 EXPOSE 3000
 
 # Start the app
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["./entrypoint.sh"]
 
 

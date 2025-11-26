@@ -1,4 +1,7 @@
-const API_BASE = "http://localhost:8000";
+// Use window.ENV if available (runtime), otherwise fall back to build-time env var or localhost
+const API_BASE = (typeof window !== 'undefined' && window.ENV?.API_BASE_URL) 
+  || import.meta.env.VITE_API_BASE_URL 
+  || "http://localhost:8000";
 
 export const fetchJobs = async (search = "", limit = 100) => {
   const url = search

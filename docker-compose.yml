@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      # Set the API URL to use the backend service name
+      - API_BASE_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - resumehack-net
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    networks:
+      - resumehack-net
+
+networks:
+  resumehack-net:
+    driver: bridge
