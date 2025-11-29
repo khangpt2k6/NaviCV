@@ -1,10 +1,8 @@
-version: "3.8"
-
 services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
+      - "85:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -14,16 +12,12 @@ services:
       - resumehack-net
 
   frontend:
-    image: ghcr.io/khangpt2k6/acm_resumehack-frontend:latest
-    expose:
-      - "3000"
+    image: ghcr.io/khangpt2k6/navicv-frontend:latest
     networks:
       - resumehack-net
 
   backend:
-    image: ghcr.io/khangpt2k6/acm_resumehack-backend:latest
-    expose:
-      - "8000"
+    image: ghcr.io/khangpt2k6/navicv-backend:latest
     networks:
       - resumehack-net
 
